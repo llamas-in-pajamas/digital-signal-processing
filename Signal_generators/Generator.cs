@@ -6,10 +6,8 @@ namespace Signal_generators
     {
         public double Amplitude { get; set; }
         public double Period { get; set; }
-        public double Frequency { get; set; }
         public double StartTime { get; set; }
-        public double Duration { get; set; }
-        public double STime { get; set; } //For Unit Jump
+        public double STime { get; set; } //For Unit Jump and Unit Impulse
         public double FillFactor { get; set; }  //For Rectangular and Triangular
         private int KFactor { get; set; }
 
@@ -21,6 +19,15 @@ namespace Signal_generators
         public double SteadyNoise()
         {
             return rand.NextDouble() * 2 * Amplitude - Amplitude;
+        }
+
+        //TODO: Make this crap working with our Amplitude
+        public double GaussianNoise()
+        {
+            double u1 = 1.0 - rand.NextDouble(); //uniform(0,1] random doubles
+            double u2 = 1.0 - rand.NextDouble();
+            return  Math.Sqrt(-2.0 * Math.Log(u1)) *
+                                   Math.Sin(2.0 * Math.PI * u2); //random normal(0,1)
         }
         private double Sinus(int time)
         {
@@ -84,6 +91,25 @@ namespace Signal_generators
             {
                 return 0.5 * Amplitude;
             }
+            return 0;
+        }
+
+        //Discrete Signals
+
+        public double UnitImpulse(int time)
+        {
+            if (time == STime) return Amplitude;
+            return 0;
+        }
+
+        public double ImpulseNoise(double probability)
+        {
+            double temp = rand.NextDouble();
+            if (probability > temp)
+            {
+                return Amplitude;
+            }
+
             return 0;
         }
 
