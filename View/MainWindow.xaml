@@ -4,8 +4,10 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:View"
+        xmlns:converters="clr-namespace:View.Converters"
         mc:Ignorable="d"
         Title="Digital Signal Proessing" Height="640" Width="1024">
+
     <Border Padding="10">
         <Grid>
             <Grid.ColumnDefinitions>
@@ -16,31 +18,22 @@
             <!-- User controls -->
             <StackPanel Grid.Column="0">
                 <TextBlock Text="Signal" />
-                <ComboBox>
-                    <ComboBoxItem>Sinus</ComboBoxItem>
-                    <ComboBoxItem>Sinus1P</ComboBoxItem>
-                    <ComboBoxItem>Sinus2P</ComboBoxItem>
-                    <ComboBoxItem>Rectangular</ComboBoxItem>
-                    <ComboBoxItem>Symetric Rectangular</ComboBoxItem>
-                    <ComboBoxItem>Unit Jump</ComboBoxItem>
-                    <ComboBoxItem>Triangular</ComboBoxItem>
-                    <ComboBoxItem>Stady Noise</ComboBoxItem>
-                    <ComboBoxItem>Gaussian Noise</ComboBoxItem>
-                    <ComboBoxItem>Impulse Noise</ComboBoxItem>
-                    <ComboBoxItem>Unit Impulse</ComboBoxItem>
-                </ComboBox>
+                <ComboBox ItemsSource="{Binding Path=SignalComboBox}" SelectedValue="{Binding Path=SignalComboBoxSelected}" />
                 
                 <TextBlock Text="Amplitude (A)" />
-                <TextBox Padding="2"/>
+                <TextBox Padding="2" Text="{Binding AmplitudeTextBox, Converter={x:Static converters:DoubleToStringConverter.Instance}}"  />
                 
                 <TextBlock Text="Period (T)" />
-                <TextBox Padding="2"/>
+                <TextBox Padding="2" Text="{Binding PeriodTextBox, Converter={x:Static converters:DoubleToStringConverter.Instance}}" />
 
                 <TextBlock Text="Duration (d)" />
-                <TextBox Padding="2"/>
+                <TextBox Padding="2" Text="{Binding DurationTextBox, Converter={x:Static converters:DoubleToStringConverter.Instance}}" />
 
                 <TextBlock Text="Start Time (t)" />
-                <TextBox Padding="2"/>
+                <TextBox Padding="2" Text="{Binding StartTimeTextBox, Converter={x:Static converters:DoubleToStringConverter.Instance}}" />
+
+                <TextBlock Text="Fill Factor" />
+                <TextBox Padding="2" Text="{Binding FillFactorTextBox, Converter={x:Static converters:DoubleToStringConverter.Instance}}" />
 
                 <!-- Buttons -->
                 <Grid Margin="0 10">
@@ -50,7 +43,7 @@
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
                     
-                    <Button Grid.Column="0" Content="Generate" Margin="0 0 10 0" />
+                    <Button Grid.Column="0" Content="Generate" Margin="0 0 10 0" Command="{Binding GenerateButton}" />
                     <Button Grid.Column="1" Content="Save" />
                     <Button Grid.Column="2" Content="Load" Margin="10 0 0 0"/>
                 </Grid>

@@ -3,6 +3,8 @@ using System.Windows;
 using System.Windows.Media;
 using LiveCharts;
 using LiveCharts.Wpf;
+using View.ViewModel;
+
 namespace View
 {
     /// <summary>
@@ -13,8 +15,9 @@ namespace View
         public MainWindow()
         {
             InitializeComponent();
+            DataContext = new MainWindowVM();
 
-            SeriesCollection = new SeriesCollection
+            /*SeriesCollection = new SeriesCollection
             {
                 new LineSeries
                 {
@@ -59,5 +62,7 @@ namespace View
         public SeriesCollection SeriesCollection { get; set; }
         public string[] Labels { get; set; }
         public Func<double, string> YFormatter { get; set; }
+    }*/
+        }
     }
 }

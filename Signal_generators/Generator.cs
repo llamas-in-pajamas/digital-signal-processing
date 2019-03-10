@@ -29,26 +29,26 @@ namespace Signal_generators
             return  Math.Sqrt(-2.0 * Math.Log(u1)) *
                                    Math.Sin(2.0 * Math.PI * u2); //random normal(0,1)
         }
-        private double Sinus(int time)
+        private double Sinus(double time)
         {
             return Math.Sin(2 * Math.PI / Period * (time - StartTime));
         }
 
-        public double Sinusoidal(int time)
+        public double Sinusoidal(double time)
         {
             return Amplitude * Sinus(time);
         }
 
-        public double Sinusoidal1P(int time)
+        public double Sinusoidal1P(double time)
         {
             return 0.5 * Amplitude * (Sinus(time) + Math.Abs(Sinus(time)));
         }
-        public double Sinusoidal2P(int time)
+        public double Sinusoidal2P(double time)
         {
             return Amplitude * Math.Abs(Sinus(time));
         }
 
-        private bool Rect(int time)
+        private bool Rect(double time)
         {
             KFactor = (int)(time / Period);
             if (time >= KFactor * Period + StartTime && time < FillFactor * Period + KFactor * Period + StartTime)
@@ -59,18 +59,18 @@ namespace Signal_generators
             return false;
         }
 
-        public double Rectangural(int time)
+        public double Rectangural(double time)
         {
             if (Rect(time)) return Amplitude;
             return 0;
         }
-        public double RectanguralSimetrical(int time)
+        public double RectanguralSimetrical(double time)
         {
             if (Rect(time)) return Amplitude;
             return -Amplitude;
         }
 
-        public double Triangular(int time)
+        public double Triangular(double time)
         {
             if (Rect(time))
             {
@@ -80,7 +80,7 @@ namespace Signal_generators
                    (Amplitude / (1 - FillFactor));
         }
 
-        public double UnitJump(int time)
+        public double UnitJump(double time)
         {
             if (time > STime)
             {
@@ -96,7 +96,7 @@ namespace Signal_generators
 
         //Discrete Signals
 
-        public double UnitImpulse(int time)
+        public double UnitImpulse(double time)
         {
             if (time == STime) return Amplitude;
             return 0;
