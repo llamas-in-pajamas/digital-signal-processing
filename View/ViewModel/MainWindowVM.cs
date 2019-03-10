@@ -16,16 +16,16 @@ namespace View.ViewModel
         /// <summary>
         /// Private Fields
         /// </summary>
-        private string _amplitudeTextBox;
-        private string _periodTextBox;
-        private string _durationTextBox;
-        private string _startTimeTextBox;
+        private double _amplitudeTextBox;
+        private double _periodTextBox;
+        private double _durationTextBox;
+        private double _startTimeTextBox;
         private SeriesCollection _seriesCollection;
         public string[] _labels;
         public Func<double, string> _yFormatter;
         private CollectionView _signalComboBox;
         private string _signalComboBoxSelected;
-        private string _fillFactorTextBox;
+        private double _fillFactorTextBox;
 
 
         /// <summary>
@@ -36,7 +36,7 @@ namespace View.ViewModel
         /// Props
         /// </summary>
 
-        public string FillFactorTextBox
+        public double FillFactorTextBox
         {
             get => _fillFactorTextBox;
             set
@@ -91,7 +91,7 @@ namespace View.ViewModel
             }
         }
 
-        public string AmplitudeTextBox
+        public double AmplitudeTextBox
         {
             get => _amplitudeTextBox;
             set
@@ -101,7 +101,7 @@ namespace View.ViewModel
             }
         }
 
-        public string PeriodTextBox
+        public double PeriodTextBox
         {
             get => _periodTextBox;
             set
@@ -111,7 +111,7 @@ namespace View.ViewModel
             }
         }
 
-        public string DurationTextBox
+        public double DurationTextBox
         {
             get => _durationTextBox;
             set
@@ -122,7 +122,7 @@ namespace View.ViewModel
 
         }
 
-        public string StartTimeTextBox
+        public double StartTimeTextBox
         {
             get => _startTimeTextBox; set
             {
@@ -151,6 +151,7 @@ namespace View.ViewModel
                 "Unit Impulse"
             };
             _signalComboBox = new CollectionView(list);
+            SignalComboBoxSelected = list[0];
         }
 
         /// <summary>
@@ -159,10 +160,10 @@ namespace View.ViewModel
         private void GenerateChart()
         {
             DataHandler dataHandler = new DataHandler(
-                Double.Parse(_amplitudeTextBox),
-                Double.Parse(DurationTextBox),
-                Double.Parse(StartTimeTextBox),
-                Double.Parse(PeriodTextBox),
+                _amplitudeTextBox,
+                DurationTextBox,
+                StartTimeTextBox,
+                PeriodTextBox,
                 SignalComboBoxSelected
             );
 

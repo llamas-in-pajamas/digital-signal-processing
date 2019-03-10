@@ -18,22 +18,22 @@
             <!-- User controls -->
             <StackPanel Grid.Column="0">
                 <TextBlock Text="Signal" />
-                <ComboBox ItemsSource="{Binding Path=SignalComboBox}" SelectedValue="{Binding Path=SignalComboBoxSelected}" />
+                <ComboBox ItemsSource="{Binding Path=SignalComboBox}" SelectedValue="{Binding Path=SignalComboBoxSelected}"  />
                 
                 <TextBlock Text="Amplitude (A)" />
-                <TextBox Padding="2" Text="{Binding AmplitudeTextBox, Converter={x:Static converters:DoubleToStringConverter.Instance}}"  />
+                <TextBox Padding="2" Text="{Binding AmplitudeTextBox}"  />
                 
                 <TextBlock Text="Period (T)" />
-                <TextBox Padding="2" Text="{Binding PeriodTextBox, Converter={x:Static converters:DoubleToStringConverter.Instance}}" />
+                <TextBox Padding="2" Text="{Binding PeriodTextBox}" />
 
                 <TextBlock Text="Duration (d)" />
-                <TextBox Padding="2" Text="{Binding DurationTextBox, Converter={x:Static converters:DoubleToStringConverter.Instance}}" />
+                <TextBox Padding="2" Text="{Binding DurationTextBox}" />
 
                 <TextBlock Text="Start Time (t)" />
-                <TextBox Padding="2" Text="{Binding StartTimeTextBox, Converter={x:Static converters:DoubleToStringConverter.Instance}}" />
+                <TextBox Padding="2" Text="{Binding StartTimeTextBox}" />
 
                 <TextBlock Text="Fill Factor" />
-                <TextBox Padding="2" Text="{Binding FillFactorTextBox, Converter={x:Static converters:DoubleToStringConverter.Instance}}" />
+                <TextBox Padding="2" Text="{Binding FillFactorTextBox}" />
 
                 <!-- Buttons -->
                 <Grid Margin="0 10">
