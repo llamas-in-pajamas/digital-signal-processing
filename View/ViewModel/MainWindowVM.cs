@@ -16,19 +16,28 @@ namespace View.ViewModel
     {
 
         /// <summary>
-        /// Private Fields
+        /// FIELDS
         /// </summary>
+
+        //VIEW FIELDS
         private double _amplitudeTextBox;
         private double _periodTextBox;
         private double _durationTextBox;
         private double _startTimeTextBox;
-        private SeriesCollection _seriesCollection;
+        private string _signalComboBoxSelected;
+        private double _fillFactorTextBox;
+        private double _unitEventTextBox;
+        private double _probabilityTextBox;
+        //VISIBILITY FIELDS
+        private bool _fillFactorTBVisibility;
+        private bool _unitEventTBVisibility;
+        private bool _probabilityTBVisibility;
+
+        //VM FIELDS
         public string[] _labels;
         public Func<double, string> _yFormatter;
         private CollectionView _signalComboBox;
-        private string _signalComboBoxSelected;
-        private double _fillFactorTextBox;
-
+        private SeriesCollection _seriesCollection;
         private bool _isScattered;
 
 
@@ -40,6 +49,37 @@ namespace View.ViewModel
         /// Props
         /// </summary>
 
+        public CollectionView SignalComboBox
+        {
+            get => _signalComboBox;
+        }
+        public SeriesCollection SeriesCollection
+        {
+            get => _seriesCollection;
+            set
+            {
+                _seriesCollection = value;
+                OnPropertyChanged(nameof(SeriesCollection));
+            }
+        }
+        public string[] Labels
+        {
+            get => _labels;
+            set
+            {
+                _labels = value;
+                OnPropertyChanged(nameof(Labels));
+            }
+        }
+        public Func<double, string> YFormatter
+        {
+            get => _yFormatter;
+            set
+            {
+                _yFormatter = value;
+                OnPropertyChanged(nameof(YFormatter));
+            }
+        }
         public double FillFactorTextBox
         {
             get => _fillFactorTextBox;
@@ -48,10 +88,6 @@ namespace View.ViewModel
                 _fillFactorTextBox = value;
                 OnPropertyChanged(nameof(FillFactorTextBox));
             }
-        }
-        public CollectionView SignalComboBox
-        {
-            get => _signalComboBox;
         }
 
         public string SignalComboBoxSelected
@@ -64,37 +100,6 @@ namespace View.ViewModel
                 ResolveAddidtionalValues(value);
                 OnPropertyChanged(nameof(SignalComboBox));
 
-            }
-        }
-
-        
-        public SeriesCollection SeriesCollection
-        {
-            get => _seriesCollection;
-            set
-            {
-                _seriesCollection = value;
-                OnPropertyChanged(nameof(SeriesCollection));
-            }
-        }
-
-        public string[] Labels
-        {
-            get => _labels;
-            set
-            {
-                _labels = value;
-                OnPropertyChanged(nameof(Labels));
-            }
-        }
-
-        public Func<double, string> YFormatter
-        {
-            get => _yFormatter;
-            set
-            {
-                _yFormatter = value;
-                OnPropertyChanged(nameof(YFormatter));
             }
         }
 
@@ -137,6 +142,57 @@ namespace View.ViewModel
                 OnPropertyChanged(nameof(StartTimeTextBox));
             }
         }
+
+        public double UnitEventTextBox
+        {
+            get => _unitEventTextBox;
+            set
+            {
+                _unitEventTextBox = value;
+                OnPropertyChanged(nameof(UnitEventTextBox));
+            }
+        }
+
+        public double ProbabilityTextBox
+        {
+            get => _probabilityTextBox;
+            set
+            {
+                _probabilityTextBox = value;
+                OnPropertyChanged(nameof(ProbabilityTextBox));
+            }
+        }
+        //VISIBILITY PROPS
+        public bool FillFactorTBVisibility
+        {
+            get => _fillFactorTBVisibility;
+            set
+            {
+                _fillFactorTBVisibility = value;
+                OnPropertyChanged(nameof(FillFactorTBVisibility));
+            }
+        }
+
+        public bool UnitEventTBVisibility
+        {
+            get => _unitEventTBVisibility;
+            set
+            {
+                _unitEventTBVisibility = value;
+                OnPropertyChanged(nameof(UnitEventTBVisibility));
+            }
+        }
+
+        public bool ProbabilityTBVisibility
+        {
+            get => _probabilityTBVisibility;
+            set
+            {
+                _probabilityTBVisibility = value;
+                OnPropertyChanged(nameof(ProbabilityTBVisibility));
+            }
+        }
+
         /// <summary>
         /// CTOR
         /// </summary>
@@ -173,8 +229,8 @@ namespace View.ViewModel
                 PeriodTextBox,
                 SignalComboBoxSelected,
                 FillFactorTextBox,
-                5.0,
-                0.2
+                UnitEventTextBox,
+                ProbabilityTextBox
 
             );
 
@@ -214,7 +270,7 @@ namespace View.ViewModel
                         }
                     };
                 }
-                
+
             }
             catch (Exception e)
             {
@@ -222,11 +278,15 @@ namespace View.ViewModel
 
             }
 
-            
+
         }
 
         private void ResolveAddidtionalValues(string value)
         {
+            FillFactorTBVisibility = false;
+            UnitEventTBVisibility = false;
+            ProbabilityTBVisibility = false;
+
             switch (value)
             {
                 case "Sinus":
@@ -240,15 +300,19 @@ namespace View.ViewModel
                     break;
                 case "Rectangular":
                     _isScattered = false;
+                    FillFactorTBVisibility = true;
                     break;
                 case "Symetric Rectangular":
                     _isScattered = false;
+                    FillFactorTBVisibility = true;
                     break;
                 case "Unit Jump":
                     _isScattered = false;
+                    UnitEventTBVisibility = true;
                     break;
                 case "Triangular":
                     _isScattered = false;
+                    FillFactorTBVisibility = true;
                     break;
                 case "Steady Noise":
                     _isScattered = false;
@@ -258,9 +322,11 @@ namespace View.ViewModel
                     break;
                 case "Impulse Noise":
                     _isScattered = true;
+                    ProbabilityTBVisibility = true;
                     break;
                 case "Unit Impulse":
                     _isScattered = true;
+                    UnitEventTBVisibility = true;
                     break;
 
                 default:

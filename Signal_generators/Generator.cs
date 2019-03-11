@@ -7,7 +7,7 @@ namespace Signal_generators
         public double Amplitude { get; set; }
         public double Period { get; set; }
         public double StartTime { get; set; }
-        public double Propability { get; set; } //For Impulse Noise
+        public double Probability { get; set; } //For Impulse Noise
         public double STime { get; set; } //For Unit Jump and Unit Impulse
         public double FillFactor { get; set; }  //For Rectangular and Triangular
         private int KFactor { get; set; }
@@ -15,7 +15,7 @@ namespace Signal_generators
         private Random rand = new Random();
 
 
-        //TODO: All Discrete Signals + Gaussian noise
+        //TODO: Gaussian noise check
         //https://stackoverflow.com/questions/218060/random-gaussian-variables - Gaussian noise
         public double SteadyNoise()
         {
@@ -51,6 +51,8 @@ namespace Signal_generators
 
         private bool Rect(double time)
         {
+            //TODO: BUT WHY I HAVE TO DO DIS?????
+            time = Math.Round(time, 6);
             if (FillFactor < 0 || FillFactor > 1)
             {
                 throw new ArgumentException("Fill Factor value has to be in range <0,1>");
@@ -91,6 +93,8 @@ namespace Signal_generators
 
         public double UnitJump(double time)
         {
+            //TODO: BUT WHY I HAVE TO DO DIS?????
+            time = Math.Round(time, 6);
             if (time > STime)
             {
                 return Amplitude;
@@ -107,18 +111,20 @@ namespace Signal_generators
 
         public double UnitImpulse(double time)
         {
-            if (time == STime) return Amplitude;
+            //TODO: BUT WHY I HAVE TO DO DIS?????
+            time = Math.Round(time, 6);
+            if (time .Equals(STime) ) return Amplitude;
             return 0;
         }
 
         public double ImpulseNoise()
         {
-            if (Propability < 0 || Propability > 1)
+            if (Probability < 0 || Probability > 1)
             {
-                throw new ArgumentException("Propability value has to be in range <0,1>");
+                throw new ArgumentException("Probability value has to be in range <0,1>");
             }
             double temp = rand.NextDouble();
-            if (Propability > temp)
+            if (Probability > temp)
             {
                 return Amplitude;
             }

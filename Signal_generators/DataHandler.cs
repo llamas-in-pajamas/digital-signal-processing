@@ -22,14 +22,14 @@ namespace Signal_generators
         
 
         
-        public DataHandler(double amplitude, double duration, double startTime, double period, string signal, double fillFactor, double sTime, double propability)
+        public DataHandler(double amplitude, double duration, double startTime, double period, string signal, double fillFactor, double sTime, double probability)
         {
             _generator.Amplitude = amplitude;
             _generator.StartTime = startTime;
             _generator.Period = period;
             _generator.FillFactor = fillFactor;
             _generator.STime = sTime;
-            _generator.Propability = propability;
+            _generator.Probability = probability;
 
             _period = period;
             _duration = duration;
@@ -100,7 +100,7 @@ namespace Signal_generators
                 Y.Add(_generator.UnitImpulse(i));
             }
         }
-        private void GenerateImpulseNoise()
+        private void GenerateImpulseNoise() //Probability needed
         {
             for (double i = _startTime; i < _endTime; i += _delta)
             {
