@@ -5,26 +5,33 @@ namespace Signal_generators
 {
     public class DataHandler
     {
-        private double _amplitude;
+        //ARGUMENTS TAKEN FROM USER
         private double _duration;
         private double _startTime;
         private double _period;
-        private double _endTime;
-        private Generator _generator = new Generator();
-        public List<double> X = new List<double>();
-        public List<double> Y = new List<double>();
         private string _signal;
 
-        public double FillFactor { get; set; }
+
+        //GENERATED
+        private double _delta;
+        private double _endTime;
+        private Generator _generator = new Generator();
+
+        public List<double> X = new List<double>();
+        public List<double> Y = new List<double>();
         
-        public DataHandler(double amplitude, double duration, double startTime, double period, string signal)
+
+        
+        public DataHandler(double amplitude, double duration, double startTime, double period, string signal, double fillFactor, double sTime, double propability)
         {
             _generator.Amplitude = amplitude;
             _generator.StartTime = startTime;
             _generator.Period = period;
+            _generator.FillFactor = fillFactor;
+            _generator.STime = sTime;
+            _generator.Propability = propability;
 
             _period = period;
-            _amplitude = amplitude;
             _duration = duration;
             _startTime = startTime;
             _signal = signal;
@@ -36,92 +43,143 @@ namespace Signal_generators
             X.Clear();
             Y.Clear();
             int numberOfSamples = CalculateNumberOfSamples();
+            _delta = _duration / numberOfSamples;
             switch (_signal)
             {
                 case "Sinus":
-                    GenerateSinus(numberOfSamples);
+                    GenerateSinus();
                     break;
                 case "Sinus1P":
-                    GenerateSinus1P(numberOfSamples);
+                    GenerateSinus1P();
                     break;
                 case "Sinus2P":
-                    GenerateSinus2P(numberOfSamples);
+                    GenerateSinus2P();
                     break;
                 case "Rectangular":
-                    GenerateRectangular(numberOfSamples);
+                    GenerateRectangular();
+                    break;
+                case "Symetric Rectangular":
+                    GenerateSymetricRectangular();
+                    break;
+                case "Unit Jump":
+                    GenerateUnitJump();
                     break;
                 case "Triangular":
-                    GenerateTriangular(numberOfSamples);
+                    GenerateTriangular();
                     break;
                 case "Steady Noise":
-                    GenerateSteadyNoise(numberOfSamples);
+                    GenerateSteadyNoise();
+                    break;
+                case "Gaussian Noise":
+                    GenerateGaussianNoise();
+                    break;
+                case "Impulse Noise":
+                    GenerateImpulseNoise();
+                    break;
+                case "Unit Impulse":
+                    GenerateUnitImpulse();
                     break;
                 default:
                     throw new NotImplementedException();
             }
         }
 
-        private void GenerateSteadyNoise(int numberOfSamples)
+       
+
+        private int CalculateNumberOfSamples()
         {
-            double delta = _duration / numberOfSamples;
-            for (double i = _startTime; i < _endTime; i += delta)
+            return (int)(Math.Abs(_endTime - _startTime) * _period);
+        }
+
+        //CALL METHODS
+        private void GenerateUnitImpulse() //STime Needed
+        {
+            for (double i = _startTime; i < _endTime; i += _delta)
+            {
+                X.Add(i);
+                Y.Add(_generator.UnitImpulse(i));
+            }
+        }
+        private void GenerateImpulseNoise()
+        {
+            for (double i = _startTime; i < _endTime; i += _delta)
+            {
+                X.Add(i);
+                Y.Add(_generator.ImpulseNoise());
+            }
+        }
+        private void GenerateGaussianNoise()
+        {
+            for (double i = _startTime; i < _endTime; i += _delta)
+            {
+                X.Add(i);
+                Y.Add(_generator.GaussianNoise());
+            }
+        }
+        private void GenerateSteadyNoise()
+        {
+            for (double i = _startTime; i < _endTime; i += _delta)
             {
                 X.Add(i);
                 Y.Add(_generator.SteadyNoise());
             }
         }
 
-        private void GenerateTriangular(int numberOfSamples)
+        private void GenerateTriangular() //FillFactor needed
         {
-            double delta = _duration / numberOfSamples;
-            _generator.FillFactor = FillFactor;
-            for (double i = _startTime; i < _endTime; i += delta)
+            for (double i = _startTime; i < _endTime; i += _delta)
             {
                 X.Add(i);
                 Y.Add(_generator.Triangular(i));
             }
         }
-
-        private void GenerateRectangular(int numberOfSamples)
+        private void GenerateUnitJump() //STime Needed
         {
-            double delta = _duration / numberOfSamples;
-            _generator.FillFactor = FillFactor;
-            for (double i = _startTime; i < _endTime; i += delta)
+            for (double i = _startTime; i < _endTime; i += _delta)
+            {
+                X.Add(i);
+                Y.Add(_generator.UnitJump(i));
+            }
+        }
+        private void GenerateSymetricRectangular() //FillFactor needed
+        {
+            for (double i = _startTime; i < _endTime; i += _delta)
+            {
+                X.Add(i);
+                Y.Add(_generator.RectanguralSymetrical(i));
+            }
+        }
+
+        private void GenerateRectangular() //FillFactor needed
+        {
+            for (double i = _startTime; i < _endTime; i += _delta)
             {
                 X.Add(i);
                 Y.Add(_generator.Rectangural(i));
             }
         }
 
-        private void GenerateSinus2P(int numberOfSamples)
+        private void GenerateSinus2P()
         {
-            double delta = _duration / numberOfSamples;
-            for (double i = _startTime; i < _endTime; i += delta)
+            for (double i = _startTime; i < _endTime; i += _delta)
             {
                 X.Add(i);
                 Y.Add(_generator.Sinusoidal2P(i));
             }
         }
 
-        private void GenerateSinus1P(int numberOfSamples)
+        private void GenerateSinus1P()
         {
-            double delta = _duration / numberOfSamples;
-            for (double i = _startTime; i < _endTime; i += delta)
+            for (double i = _startTime; i < _endTime; i += _delta)
             {
                 X.Add(i);
                 Y.Add(_generator.Sinusoidal1P(i));
             }
         }
-
-        private int CalculateNumberOfSamples()
-        {
-            return (int)(Math.Abs(_endTime - _startTime) * _period);
-        }
         
-        private void GenerateSinus(int numberOfSamples)
+        private void GenerateSinus()
         {
-            double delta = _duration / numberOfSamples;
-            for (double i = _startTime; i < _endTime; i+= delta)
+            for (double i = _startTime; i < _endTime; i+= _delta)
             {
                 X.Add(i);
                 Y.Add(_generator.Sinusoidal(i));

@@ -4,8 +4,10 @@ using LiveCharts.Wpf;
 using Signal_generators;
 using System;
 using System.Collections.Generic;
+using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
+using System.Windows.Media;
 using View.ViewModel.Base;
 
 namespace View.ViewModel
@@ -26,6 +28,8 @@ namespace View.ViewModel
         private CollectionView _signalComboBox;
         private string _signalComboBoxSelected;
         private double _fillFactorTextBox;
+
+        private bool _isScattered;
 
 
         /// <summary>
@@ -57,10 +61,13 @@ namespace View.ViewModel
             {
                 if (_signalComboBoxSelected == value) return;
                 _signalComboBoxSelected = value;
+                ResolveAddidtionalValues(value);
                 OnPropertyChanged(nameof(SignalComboBox));
 
             }
         }
+
+        
         public SeriesCollection SeriesCollection
         {
             get => _seriesCollection;
@@ -164,23 +171,101 @@ namespace View.ViewModel
                 DurationTextBox,
                 StartTimeTextBox,
                 PeriodTextBox,
-                SignalComboBoxSelected
+                SignalComboBoxSelected,
+                FillFactorTextBox,
+                5.0,
+                0.2
+
             );
 
-            dataHandler.Call();
-            ChartValues<ObservablePoint> values = new ChartValues<ObservablePoint>();
-            for (int i = 0; i < dataHandler.X.Count; i++)
+            try
             {
-                values.Add(new ObservablePoint(dataHandler.X[i], dataHandler.Y[i]));
-            }
-            SeriesCollection = new SeriesCollection
-            {
-                new LineSeries
+                dataHandler.Call();
+                ChartValues<ObservablePoint> values = new ChartValues<ObservablePoint>();
+                for (int i = 0; i < dataHandler.X.Count; i++)
                 {
-                    Title = "Sinus",
-                    Values = values
+                    values.Add(new ObservablePoint(dataHandler.X[i], dataHandler.Y[i]));
                 }
-            };
+
+                if (_isScattered)
+                {
+                    SeriesCollection = new SeriesCollection
+                    {
+
+                        new ScatterSeries()
+                        {
+                            PointGeometry = new EllipseGeometry(),
+                            StrokeThickness = 8,
+                            Title = SignalComboBoxSelected,
+                            Values = values
+                        }
+                    };
+                }
+                else
+                {
+                    SeriesCollection = new SeriesCollection
+                    {
+
+                        new LineSeries()
+                        {
+                            Fill = Brushes.Transparent,
+                            Title = SignalComboBoxSelected,
+                            Values = values
+                        }
+                    };
+                }
+                
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show($"Error has occured: {e.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+
+            }
+
+            
+        }
+
+        private void ResolveAddidtionalValues(string value)
+        {
+            switch (value)
+            {
+                case "Sinus":
+                    _isScattered = false;
+                    break;
+                case "Sinus1P":
+                    _isScattered = false;
+                    break;
+                case "Sinus2P":
+                    _isScattered = false;
+                    break;
+                case "Rectangular":
+                    _isScattered = false;
+                    break;
+                case "Symetric Rectangular":
+                    _isScattered = false;
+                    break;
+                case "Unit Jump":
+                    _isScattered = false;
+                    break;
+                case "Triangular":
+                    _isScattered = false;
+                    break;
+                case "Steady Noise":
+                    _isScattered = false;
+                    break;
+                case "Gaussian Noise":
+                    _isScattered = false;
+                    break;
+                case "Impulse Noise":
+                    _isScattered = true;
+                    break;
+                case "Unit Impulse":
+                    _isScattered = true;
+                    break;
+
+                default:
+                    throw new NotImplementedException();
+            }
         }
     }
 }

@@ -7,6 +7,7 @@ namespace Signal_generators
         public double Amplitude { get; set; }
         public double Period { get; set; }
         public double StartTime { get; set; }
+        public double Propability { get; set; } //For Impulse Noise
         public double STime { get; set; } //For Unit Jump and Unit Impulse
         public double FillFactor { get; set; }  //For Rectangular and Triangular
         private int KFactor { get; set; }
@@ -50,6 +51,10 @@ namespace Signal_generators
 
         private bool Rect(double time)
         {
+            if (FillFactor < 0 || FillFactor > 1)
+            {
+                throw new ArgumentException("Fill Factor value has to be in range <0,1>");
+            }
             KFactor = (int)(time / Period);
             if (time >= KFactor * Period + StartTime && time < FillFactor * Period + KFactor * Period + StartTime)
             {
@@ -64,7 +69,7 @@ namespace Signal_generators
             if (Rect(time)) return Amplitude;
             return 0;
         }
-        public double RectanguralSimetrical(double time)
+        public double RectanguralSymetrical(double time)
         {
             if (Rect(time)) return Amplitude;
             return -Amplitude;
@@ -72,6 +77,10 @@ namespace Signal_generators
 
         public double Triangular(double time)
         {
+            if (FillFactor <= 0 || FillFactor >= 1)
+            {
+                throw new ArgumentException("Fill Factor value has to be in range (0,1)");
+            }
             if (Rect(time))
             {
                 return Amplitude / (FillFactor * Period) * (time - KFactor * Period - StartTime);
@@ -102,10 +111,14 @@ namespace Signal_generators
             return 0;
         }
 
-        public double ImpulseNoise(double probability)
+        public double ImpulseNoise()
         {
+            if (Propability < 0 || Propability > 1)
+            {
+                throw new ArgumentException("Propability value has to be in range <0,1>");
+            }
             double temp = rand.NextDouble();
-            if (probability > temp)
+            if (Propability > temp)
             {
                 return Amplitude;
             }
