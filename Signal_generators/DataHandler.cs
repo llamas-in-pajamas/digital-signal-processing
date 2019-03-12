@@ -88,7 +88,9 @@ namespace Signal_generators
 
         private int CalculateNumberOfSamples()
         {
-            return (int)(Math.Abs(_endTime - _startTime) * _period);
+            //TODO: Work out this shit
+            //return (int)(Math.Abs(_endTime - _startTime) * _period);
+            return 5000;
         }
 
         //CALL METHODS
