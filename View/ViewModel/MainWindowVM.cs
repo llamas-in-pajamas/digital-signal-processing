@@ -21,7 +21,6 @@ namespace View.ViewModel
         private List<string> _signals = new List<string>();
 
         //VM FIELDS
-        private bool _isScattered;
         private RadioButtonsEnum _drawModeRadioBTN;
         private DataHandler dataHandler;
         private int _numberOfColumnsTb = 5;
@@ -44,7 +43,7 @@ namespace View.ViewModel
             {
                 _drawModeRadioBTN = value;
                 OnPropertyChanged(nameof(DrawModeRadioBTN));
-                ResolveAddidtionalValues(value.ToString());
+                ResolveAdditionalValues(value.ToString());
                 DrawChart();
             }
         }
@@ -80,7 +79,7 @@ namespace View.ViewModel
             {
                 if (_signalComboBoxSelected == value) return;
                 _signalComboBoxSelected = value;
-                ResolveAddidtionalValues(value);
+                ResolveAdditionalValues(value);
                 OnPropertyChanged(nameof(SignalComboBox));
 
             }
@@ -180,12 +179,19 @@ namespace View.ViewModel
                 "Divide"
 
             };
+
             OperationsComboBox = new CollectionView(list1);
+            OperationComboBoxSelected = list1[0];
             SignalComboBox = new CollectionView(list);
             SignalComboBoxSelected = list[0];
             DrawModeRadioBTN = RadioButtonsEnum.LineSeries;
             RemoveButton = new RelayCommand(RemoveChart);
             DoOperationButton = new RelayCommand(Operations);
+
+            AmplitudeTextBox = 1.0;
+            PeriodTextBox = 1.0;
+            DurationTextBox = 10.0;
+
         }
 
         #region methods
@@ -195,7 +201,7 @@ namespace View.ViewModel
             _signals = new List<string>();
             foreach (KeyValuePair<int, DataHandler> keyValuePair in _dict)
             {
-                _signals.Add($"{keyValuePair.Key}. {keyValuePair.Value._signal}");
+                _signals.Add($"{keyValuePair.Key}. {keyValuePair.Value.Signal}");
             }
             SignalsComboBox = new CollectionView(_signals);
             AdditionalSignalsComboBox = new CollectionView(_signals);
@@ -221,22 +227,21 @@ namespace View.ViewModel
 
         private void GenerateChart()
         {
-            dataHandler = new DataHandler(
-                AmplitudeTextBox,
-                DurationTextBox,
-                StartTimeTextBox,
-                PeriodTextBox,
-                SignalComboBoxSelected,
-                FillFactorTextBox,
-                UnitEventTextBox,
-                ProbabilityTextBox
-
-            );
-            _dict.Add(_dict.Count, dataHandler);
-
             try
             {
+                dataHandler = new DataHandler(
+                    AmplitudeTextBox,
+                    DurationTextBox,
+                    StartTimeTextBox,
+                    PeriodTextBox,
+                    SignalComboBoxSelected,
+                    FillFactorTextBox,
+                    UnitEventTextBox,
+                    ProbabilityTextBox
+
+                );
                 dataHandler.Call();
+                _dict.Add(_dict.Count, dataHandler);
 
             }
             catch (Exception e)
@@ -248,10 +253,10 @@ namespace View.ViewModel
 
         }
 
-        private void RemoveSignal(int key)
+        /*private void RemoveSignal(int key)
         {
             _dict.Remove(key);
-        }
+        }*/
 
         private void Operations()
         {
@@ -276,21 +281,23 @@ namespace View.ViewModel
                         result = SignalUtils.Operations.Divide(_dict[first].Y, _dict[second].Y);
                         break;
                 }
+                //TODO: Dodawanie do słownika sprawdzić czy klucz już istnieje - metoda do tego
+                _dict.Add(_dict.Count, new DataHandler()
+                {
+                    Signal = "result",
+                    X = _dict[0].X,
+                    Y = result
+                });
+                DrawChart();
 
             }
             catch (Exception e)
             {
                 MessageBox.Show($"Error has occured: {e.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-            //TODO: Dodawanie do słownika sprawdzić czy klucz już istnieje
-            _dict.Add(_dict.Count, new DataHandler()
-            {
-                _signal = "result",
-                X = _dict[0].X,
-                Y = result
-            });
+            
             PopulateSignalsList();
-            DrawChart();
+            
         }
 
         private void DrawChart()
@@ -312,13 +319,13 @@ namespace View.ViewModel
                                 lineValues.Add(new ObservablePoint(entry.Value.X[i], entry.Value.Y[i]));
                             }
 
-                            if (_isScattered)
+                            if (entry.Value.IsScattered)
                             {
                                 SeriesCollection.Add(new ScatterSeries()
                                 {
                                     PointGeometry = new EllipseGeometry(),
                                     StrokeThickness = 8,
-                                    Title = $"{entry.Key}. {entry.Value._signal}",
+                                    Title = $"{entry.Key}. {entry.Value.Signal}",
                                     Values = lineValues
                                 });
                             }
@@ -327,7 +334,7 @@ namespace View.ViewModel
                                 SeriesCollection.Add(new LineSeries()
                                 {
                                     Fill = Brushes.Transparent,
-                                    Title = $"{entry.Key}. {entry.Value._signal}",
+                                    Title = $"{entry.Key}. {entry.Value.Signal}",
                                     Values = lineValues,
                                     PointGeometry = null
                                 });
@@ -348,15 +355,15 @@ namespace View.ViewModel
                             HistogramValues.Add(HistData[i][2]);
                         }
                         SeriesCollection = new SeriesCollection
+                        {
+
+                            new ColumnSeries()
                             {
+                                Title = MainComboBoxSelected,
+                                Values = HistogramValues
+                            }
 
-                                new ColumnSeries()
-                                {
-                                    Title = MainComboBoxSelected,
-                                    Values = HistogramValues
-                                }
-
-                            };
+                        };
                         break;
 
                 }
@@ -367,16 +374,13 @@ namespace View.ViewModel
             {
                 MessageBox.Show($"Error has occured: {e.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-
-
         }
 
-        private void ResolveAddidtionalValues(string value)
+        private void ResolveAdditionalValues(string value)
         {
             FillFactorTBVisibility = false;
             UnitEventTBVisibility = false;
             ProbabilityTBVisibility = false;
-            _isScattered = false;
             ColumnsTBVisibility = DrawModeRadioBTN == RadioButtonsEnum.Histogram;
 
 
@@ -406,11 +410,9 @@ namespace View.ViewModel
                 case "Gaussian Noise":
                     break;
                 case "Impulse Noise":
-                    _isScattered = true;
                     ProbabilityTBVisibility = true;
                     break;
                 case "Unit Impulse":
-                    _isScattered = true;
                     UnitEventTBVisibility = true;
                     break;
 

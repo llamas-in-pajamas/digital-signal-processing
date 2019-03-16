@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 
 namespace Signal_generators
@@ -11,7 +10,8 @@ namespace Signal_generators
         private double _duration;
         private double _startTime;
         private double _period;
-        public string _signal;
+        public string Signal;
+        public bool IsScattered = false;
 
 
         //GENERATED
@@ -25,7 +25,7 @@ namespace Signal_generators
 
         public DataHandler()
         {
-            
+
         }
         public DataHandler(double amplitude, double duration, double startTime, double period, string signal, double fillFactor, double sTime, double probability)
         {
@@ -39,8 +39,13 @@ namespace Signal_generators
             _period = period;
             _duration = duration;
             _startTime = startTime;
-            _signal = signal;
+            Signal = signal;
             _endTime = _startTime + _duration;
+
+            if (signal == "Impulse Noise" || signal == "Unit Impulse")
+            {
+                IsScattered = true;
+            }
         }
 
         public void Call()
@@ -49,7 +54,7 @@ namespace Signal_generators
             Y.Clear();
             int numberOfSamples = CalculateNumberOfSamples();
             _delta = _duration / numberOfSamples;
-            switch (_signal)
+            switch (Signal)
             {
                 case "Sinus":
                     GenerateSinus();
@@ -102,7 +107,7 @@ namespace Signal_generators
             double lowerBound = 0;
             double upperBound = 0;
             //TODO: Iteracja po num of columns!
-            for(double i = minValue; i < maxValue; i += delta)
+            for (double i = minValue; i < maxValue; i += delta)
             {
                 List<double> data = new List<double>();
                 lowerBound = i;
@@ -115,12 +120,18 @@ namespace Signal_generators
 
             return histogramData;
         }
-
+        //TODO: Calculation for discrete impulses
         private int CalculateNumberOfSamples()
         {
             //TODO: Work out this shit
-            //return (int)(Math.Abs(_endTime - _startTime) * _period);
+            if (IsScattered)
+            {
+                return (int)(Math.Abs(_endTime - _startTime) * _period);
+            }
+
             return 5000;
+
+
         }
 
         //CALL METHODS
@@ -208,10 +219,10 @@ namespace Signal_generators
                 Y.Add(_generator.Sinusoidal1P(i));
             }
         }
-        
+
         private void GenerateSinus()
         {
-            for (double i = _startTime; i < _endTime; i+= _delta)
+            for (double i = _startTime; i < _endTime; i += _delta)
             {
                 X.Add(i);
                 Y.Add(_generator.Sinusoidal(i));
