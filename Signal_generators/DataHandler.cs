@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Signal_generators
 {
@@ -84,6 +85,28 @@ namespace Signal_generators
             }
         }
 
+        public List<List<double>> ExtractHistogramData(int numberOfColumns)
+        {
+            List<List<double>> histogramData = new List<List<double>>();
+            double minValue = Y.Min();
+            double maxValue = Y.Max();
+            double delta = (Math.Abs(Y.Max() - Y.Min())) / numberOfColumns;
+            double lowerBound = 0;
+            double upperBound = 0;
+
+            for(double i = minValue; i < maxValue; i += delta)
+            {
+                List<double> data = new List<double>();
+                lowerBound = i;
+                upperBound = i + delta;
+                data.Add(lowerBound);
+                data.Add(upperBound);
+                data.Add(Y.Count(n => (n >= lowerBound && n < upperBound)));
+                histogramData.Add(data);
+            }
+
+            return histogramData;
+        }
        
 
         private int CalculateNumberOfSamples()
