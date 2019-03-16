@@ -67,7 +67,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Converters\DoubleToStringConverter.cs" />
+    <Compile Include="Converters\EnumMatchToBooleanConverter.cs" />
+    <Compile Include="FileStream\FileStream.cs" />
+    <Compile Include="Helper\RadioButtonsEnum.cs" />
     <Compile Include="ViewModel\Base\BaseVM.cs" />
     <Compile Include="ViewModel\Base\RelayCommand.cs" />
     <Compile Include="ViewModel\MainWindowVM.cs" />
@@ -118,6 +120,10 @@
     <Resource Include="FodyWeavers.xml" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\SignalUtils\SignalUtils.csproj">
+      <Project>{35a979e8-5374-41cc-95a1-4363ac53d21f}</Project>
+      <Name>SignalUtils</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Signal_generators\Signal_generators.csproj">
       <Project>{17e0426c-09bf-403d-8982-ca880689a01c}</Project>
       <Name>Signal_generators</Name>

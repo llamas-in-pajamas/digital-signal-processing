@@ -8,8 +8,8 @@ using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
+using View.Helper;
 using View.ViewModel.Base;
-
 
 namespace View.ViewModel
 {
@@ -17,24 +17,54 @@ namespace View.ViewModel
     {
         private string _signalComboBoxSelected;
 
-        //VISIBILITY FIELDS
+        private Dictionary<int, DataHandler> _dict = new Dictionary<int, DataHandler>();
+        private List<string> _signals = new List<string>();
 
         //VM FIELDS
         private bool _isScattered;
+        private RadioButtonsEnum _drawModeRadioBTN;
+        private DataHandler dataHandler;
+        private int _numberOfColumnsTb = 5;
+        private string _mainComboBoxSelected;
+        private string _additionalComboBoxSelected;
+        private string _operationComboBoxSelected;
 
-
-        /// <summary>
-        /// Commands
-        /// </summary>
         public ICommand GenerateButton { get; }
-        /// <summary>
-        /// Props
-        /// </summary>
+        public ICommand RemoveButton { get; }
+        public ICommand DoOperationButton { get; }
 
-        public CollectionView SignalComboBox
+        #region props
+
+        private ChartValues<ObservablePoint> Values { get; set; } = new ChartValues<ObservablePoint>();
+        private ChartValues<double> HistogramValues { get; set; } = new ChartValues<double>();
+        public RadioButtonsEnum DrawModeRadioBTN
         {
-            get;
+            get => _drawModeRadioBTN;
+            set
+            {
+                _drawModeRadioBTN = value;
+                OnPropertyChanged(nameof(DrawModeRadioBTN));
+                ResolveAddidtionalValues(value.ToString());
+                DrawChart();
+            }
         }
+
+        public int NumberOfColumnsTB
+        {
+            get => _numberOfColumnsTb;
+            set
+            {
+                _numberOfColumnsTb = value;
+                OnPropertyChanged(nameof(NumberOfColumnsTB));
+                DrawChart();
+            }
+        }
+
+        public CollectionView SignalsComboBox { get; set; }
+        public CollectionView AdditionalSignalsComboBox { get; set; }
+
+        public CollectionView SignalComboBox { get; }
+        public CollectionView OperationsComboBox { get; }
         public SeriesCollection SeriesCollection { get; set; }
 
         public string[] Labels { get; set; }
@@ -56,6 +86,44 @@ namespace View.ViewModel
             }
         }
 
+        public string MainComboBoxSelected
+        {
+            get => _mainComboBoxSelected;
+            set
+            {
+                if (_mainComboBoxSelected == value) return;
+                _mainComboBoxSelected = value;
+                if (DrawModeRadioBTN == RadioButtonsEnum.Histogram)
+                {
+                    DrawChart();
+                }
+                OnPropertyChanged(nameof(SignalsComboBox));
+            }
+        }
+
+        public string AdditionalComboBoxSelected
+        {
+            get => _additionalComboBoxSelected;
+            set
+            {
+                if (_additionalComboBoxSelected == value) return;
+                _additionalComboBoxSelected = value;
+                OnPropertyChanged(nameof(AdditionalSignalsComboBox));
+            }
+        }
+
+        public string OperationComboBoxSelected
+        {
+            get => _operationComboBoxSelected;
+            set
+            {
+                if (_operationComboBoxSelected == value) return;
+                _operationComboBoxSelected = value;
+                OnPropertyChanged(nameof(OperationComboBoxSelected));
+            }
+        }
+
+
         public double AmplitudeTextBox { get; set; }
 
         public double PeriodTextBox { get; set; }
@@ -68,12 +136,21 @@ namespace View.ViewModel
 
         public double ProbabilityTextBox { get; set; }
 
-        //VISIBILITY PROPS
+
+        #endregion
+
+
+        #region Visibilty props
+
         public bool FillFactorTBVisibility { get; set; }
 
         public bool UnitEventTBVisibility { get; set; }
 
         public bool ProbabilityTBVisibility { get; set; }
+        public bool ColumnsTBVisibility { get; set; }
+
+        #endregion
+
 
         /// <summary>
         /// CTOR
@@ -95,16 +172,56 @@ namespace View.ViewModel
                 "Impulse Noise",
                 "Unit Impulse"
             };
+            IList<string> list1 = new List<string>()
+            {
+                "Add",
+                "Subtract",
+                "Multiply",
+                "Divide"
+
+            };
+            OperationsComboBox = new CollectionView(list1);
             SignalComboBox = new CollectionView(list);
             SignalComboBoxSelected = list[0];
+            DrawModeRadioBTN = RadioButtonsEnum.LineSeries;
+            RemoveButton = new RelayCommand(RemoveChart);
+            DoOperationButton = new RelayCommand(Operations);
         }
 
-        /// <summary>
-        /// Methods
-        /// </summary>
+        #region methods
+
+        private void PopulateSignalsList()
+        {
+            _signals = new List<string>();
+            foreach (KeyValuePair<int, DataHandler> keyValuePair in _dict)
+            {
+                _signals.Add($"{keyValuePair.Key}. {keyValuePair.Value._signal}");
+            }
+            SignalsComboBox = new CollectionView(_signals);
+            AdditionalSignalsComboBox = new CollectionView(_signals);
+        }
+
+        private void RemoveChart()
+        {
+
+            try
+            {
+                var chosen = MainComboBoxSelected.Substring(0, 1);
+                _dict.Remove(int.Parse(chosen));
+
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show($"Error has occured: {e.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            PopulateSignalsList();
+
+            DrawChart();
+        }
+
         private void GenerateChart()
         {
-            DataHandler dataHandler = new DataHandler(
+            dataHandler = new DataHandler(
                 AmplitudeTextBox,
                 DurationTextBox,
                 StartTimeTextBox,
@@ -115,50 +232,140 @@ namespace View.ViewModel
                 ProbabilityTextBox
 
             );
+            _dict.Add(_dict.Count, dataHandler);
 
             try
             {
                 dataHandler.Call();
-                ChartValues<ObservablePoint> values = new ChartValues<ObservablePoint>();
-                for (int i = 0; i < dataHandler.X.Count; i++)
-                {
-                    values.Add(new ObservablePoint(dataHandler.X[i], dataHandler.Y[i]));
-                }
 
-                if (_isScattered)
-                {
-                    SeriesCollection = new SeriesCollection
-                    {
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show($"Error has occured: {e.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            PopulateSignalsList();
+            DrawChart();
 
-                        new ScatterSeries()
-                        {
-                            PointGeometry = new EllipseGeometry(),
-                            StrokeThickness = 8,
-                            Title = SignalComboBoxSelected,
-                            Values = values
-                        }
-                    };
-                }
-                else
-                {
-                    SeriesCollection = new SeriesCollection
-                    {
+        }
 
-                        new LineSeries()
-                        {
-                            Fill = Brushes.Transparent,
-                            Title = SignalComboBoxSelected,
-                            Values = values,
-                            PointGeometry = null
-                        }
-                    };
+        private void RemoveSignal(int key)
+        {
+            _dict.Remove(key);
+        }
+
+        private void Operations()
+        {
+            List<double> result = new List<double>();
+            var first = int.Parse(MainComboBoxSelected.Substring(0, 1));
+            var second = int.Parse(AdditionalComboBoxSelected.Substring(0, 1));
+            try
+            {
+                switch (OperationComboBoxSelected)
+                {
+
+                    case "Add":
+                        result = SignalUtils.Operations.Add(_dict[first].Y, _dict[second].Y);
+                        break;
+                    case "Subtract":
+                        result = SignalUtils.Operations.Subtract(_dict[first].Y, _dict[second].Y);
+                        break;
+                    case "Multiply":
+                        result = SignalUtils.Operations.Multiply(_dict[first].Y, _dict[second].Y);
+                        break;
+                    case "Divide":
+                        result = SignalUtils.Operations.Divide(_dict[first].Y, _dict[second].Y);
+                        break;
                 }
 
             }
             catch (Exception e)
             {
                 MessageBox.Show($"Error has occured: {e.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            //TODO: Dodawanie do słownika sprawdzić czy klucz już istnieje
+            _dict.Add(_dict.Count, new DataHandler()
+            {
+                _signal = "result",
+                X = _dict[0].X,
+                Y = result
+            });
+            PopulateSignalsList();
+            DrawChart();
+        }
 
+        private void DrawChart()
+        {
+            Labels = null;
+            try
+            {
+                SeriesCollection = new SeriesCollection();
+
+
+                switch (DrawModeRadioBTN)
+                {
+                    case RadioButtonsEnum.LineSeries:
+                        foreach (KeyValuePair<int, DataHandler> entry in _dict)
+                        {
+                            ChartValues<ObservablePoint> lineValues = new ChartValues<ObservablePoint>();
+                            for (int i = 0; i < entry.Value.X.Count; i++)
+                            {
+                                lineValues.Add(new ObservablePoint(entry.Value.X[i], entry.Value.Y[i]));
+                            }
+
+                            if (_isScattered)
+                            {
+                                SeriesCollection.Add(new ScatterSeries()
+                                {
+                                    PointGeometry = new EllipseGeometry(),
+                                    StrokeThickness = 8,
+                                    Title = $"{entry.Key}. {entry.Value._signal}",
+                                    Values = lineValues
+                                });
+                            }
+                            else
+                            {
+                                SeriesCollection.Add(new LineSeries()
+                                {
+                                    Fill = Brushes.Transparent,
+                                    Title = $"{entry.Key}. {entry.Value._signal}",
+                                    Values = lineValues,
+                                    PointGeometry = null
+                                });
+
+                            }
+                        }
+
+                        break;
+                        
+                    case RadioButtonsEnum.Histogram:
+                        var option = int.Parse(MainComboBoxSelected.Substring(0, 1));
+                        HistogramValues = new ChartValues<double>();
+                        var HistData = _dict[option].ExtractHistogramData(NumberOfColumnsTB);
+                        Labels = new string[HistData.Count];
+                        for (int i = 0; i < HistData.Count; i++)
+                        {
+                            Labels[i] = $"<{Math.Round(HistData[i][0], 2) }, {Math.Round(HistData[i][1], 2) })";
+                            HistogramValues.Add(HistData[i][2]);
+                        }
+                        SeriesCollection = new SeriesCollection
+                            {
+
+                                new ColumnSeries()
+                                {
+                                    Title = MainComboBoxSelected,
+                                    Values = HistogramValues
+                                }
+
+                            };
+                        break;
+
+                }
+
+
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show($"Error has occured: {e.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
 
 
@@ -170,11 +377,13 @@ namespace View.ViewModel
             UnitEventTBVisibility = false;
             ProbabilityTBVisibility = false;
             _isScattered = false;
+            ColumnsTBVisibility = DrawModeRadioBTN == RadioButtonsEnum.Histogram;
+
 
             switch (value)
             {
                 case "Sinus":
-                    
+
                     break;
                 case "Sinus1P":
                     break;
@@ -205,9 +414,10 @@ namespace View.ViewModel
                     UnitEventTBVisibility = true;
                     break;
 
-                default:
-                    throw new NotImplementedException();
+
             }
         }
+
+        #endregion
     }
 }

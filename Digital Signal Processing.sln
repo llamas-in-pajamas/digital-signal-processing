@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Signal_generators", "Signal
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "View", "View\View.csproj", "{A1143B62-7F24-4AD4-BFF4-EF1FE218DDB9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SignalUtils", "SignalUtils\SignalUtils.csproj", "{35A979E8-5374-41CC-95A1-4363AC53D21F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{A1143B62-7F24-4AD4-BFF4-EF1FE218DDB9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A1143B62-7F24-4AD4-BFF4-EF1FE218DDB9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A1143B62-7F24-4AD4-BFF4-EF1FE218DDB9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{35A979E8-5374-41CC-95A1-4363AC53D21F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{35A979E8-5374-41CC-95A1-4363AC53D21F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{35A979E8-5374-41CC-95A1-4363AC53D21F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{35A979E8-5374-41CC-95A1-4363AC53D21F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

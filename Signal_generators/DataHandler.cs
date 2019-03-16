@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace Signal_generators
@@ -10,7 +11,7 @@ namespace Signal_generators
         private double _duration;
         private double _startTime;
         private double _period;
-        private string _signal;
+        public string _signal;
 
 
         //GENERATED
@@ -20,9 +21,12 @@ namespace Signal_generators
 
         public List<double> X = new List<double>();
         public List<double> Y = new List<double>();
-        
 
-        
+
+        public DataHandler()
+        {
+            
+        }
         public DataHandler(double amplitude, double duration, double startTime, double period, string signal, double fillFactor, double sTime, double probability)
         {
             _generator.Amplitude = amplitude;
@@ -87,13 +91,17 @@ namespace Signal_generators
 
         public List<List<double>> ExtractHistogramData(int numberOfColumns)
         {
+            if (numberOfColumns < 0)
+            {
+                throw new ArgumentException("Number of columns must be a positive integer.");
+            }
             List<List<double>> histogramData = new List<List<double>>();
             double minValue = Y.Min();
             double maxValue = Y.Max();
             double delta = (Math.Abs(Y.Max() - Y.Min())) / numberOfColumns;
             double lowerBound = 0;
             double upperBound = 0;
-
+            //TODO: Iteracja po num of columns!
             for(double i = minValue; i < maxValue; i += delta)
             {
                 List<double> data = new List<double>();
@@ -107,7 +115,6 @@ namespace Signal_generators
 
             return histogramData;
         }
-       
 
         private int CalculateNumberOfSamples()
         {

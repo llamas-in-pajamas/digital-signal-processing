@@ -1,0 +1,71 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace SignalUtils
+{
+    public static class Operations
+    {
+        private static void ListValidator(List<double> list1, List<double> list2)
+        {
+            if (list1.Count != list2.Count)
+            {
+                throw new ArgumentException();
+            }
+        }
+        public static List<double> Add(List<double> list1, List<double> list2)
+        {
+            ListValidator(list1, list2);
+            List<double> list = new List<double>(list1.Count);
+            for (int i = 0, length = list1.Count; i < length; i++)
+            {
+                list.Add(list1[i] + list2[i]);
+            }
+
+            return list;
+        }
+
+        public static List<double> Subtract(List<double> list1, List<double> list2)
+        {
+            ListValidator(list1, list2);
+            List<double> list = new List<double>(list1.Count);
+            for (int i = 0, length = list1.Count; i < length; i++)
+            {
+                list.Add(list1[i] - list2[i]);
+            }
+
+            return list;
+        }
+
+        public static List<double> Multiply(List<double> list1, List<double> list2)
+        {
+            ListValidator(list1, list2);
+            List<double> list = new List<double>(list1.Count);
+            for (int i = 0, length = list1.Count; i < length; i++)
+            {
+                list.Add(list1[i] * list2[i]);
+            }
+
+            return list;
+        }
+
+        public static List<double> Divide(List<double> list1, List<double> list2)
+        {
+            ListValidator(list1, list2);
+            if (list2.Contains(0))
+            {
+                throw new DivideByZeroException();
+            }
+
+            List<double> list = new List<double>(list1.Count);
+            for (int i = 0, length = list1.Count; i < length; i++)
+            {
+                list.Add(list1[i] / list2[i]);
+            }
+
+            return list;
+        }
+    }
+}

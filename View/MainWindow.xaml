@@ -6,28 +6,29 @@
         xmlns:local="clr-namespace:View"
         xmlns:converters="clr-namespace:View.Converters"
         mc:Ignorable="d"
-        Title="Digital Signal Proessing" Height="640" Width="1024">
+        Title="Digital Signal Processing" Height="640" Width="1024">
 
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <converters:EnumMatchToBooleanConverter x:Key="enumConverter" />
     </Window.Resources>
-    
+
     <Border Padding="10">
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition  Width="*" />
                 <ColumnDefinition  Width="3*" />
             </Grid.ColumnDefinitions>
-            
+
             <!-- User controls -->
             <StackPanel Grid.Column="0">
-                
+
                 <TextBlock Text="Signal" />
                 <ComboBox ItemsSource="{Binding Path=SignalComboBox}" SelectedValue="{Binding Path=SignalComboBoxSelected}"  />
-                
+
                 <TextBlock Text="Amplitude (A)" />
                 <TextBox Padding="2" Text="{Binding AmplitudeTextBox}"  />
-                
+
                 <TextBlock Text="Period (T)" />
                 <TextBox Padding="2" Text="{Binding PeriodTextBox}" />
 
@@ -53,14 +54,64 @@
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    
+
                     <Button Grid.Column="0" Content="Generate" Margin="0 0 10 0" Command="{Binding GenerateButton}" />
                     <Button Grid.Column="1" Content="Save" />
                     <Button Grid.Column="2" Content="Load" Margin="10 0 0 0"/>
                 </Grid>
+                <Grid Margin="0 10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <RadioButton Grid.Column="0" Content="Line Series" GroupName="DrawOptions" IsChecked="{Binding Path=DrawModeRadioBTN, Mode=TwoWay, 
+                                 Converter={StaticResource enumConverter},
+                                 ConverterParameter=LineSeries}" />
+                    <RadioButton Grid.Column="1" Content="Histogram" GroupName="DrawOptions" IsChecked="{Binding Path=DrawModeRadioBTN, Mode=TwoWay, 
+                                 Converter={StaticResource enumConverter},
+                                 ConverterParameter=Histogram}" />
+                </Grid>
+                <Grid Margin="0 10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="Enter number of columns: " TextAlignment="Right" Visibility="{Binding Path=ColumnsTBVisibility, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                    <TextBox Grid.Column="1" Text="{Binding NumberOfColumnsTB, UpdateSourceTrigger=PropertyChanged}" Visibility="{Binding Path=ColumnsTBVisibility, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
+
+                </Grid>
+                <Grid Margin="0 5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="2*" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="Main: " TextAlignment="Right" />
+                    <ComboBox Grid.Column="1" ItemsSource="{Binding Path=SignalsComboBox}" SelectedValue="{Binding Path=MainComboBoxSelected}"  />
+                </Grid>
+                <Grid Margin="0 5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="2*" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="Additional: " TextAlignment="Right" />
+                    <ComboBox Grid.Column="1" ItemsSource="{Binding Path=AdditionalSignalsComboBox}" SelectedValue="{Binding Path=AdditionalComboBoxSelected}"  />
+                </Grid>
+                <Button Grid.Column="0" Content="Remove" Margin="0 0 10 0" Command="{Binding RemoveButton}" />
+                <Grid Margin="0 5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="2*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="Operation: " TextAlignment="Right" />
+                    <ComboBox Grid.Column="1" ItemsSource="{Binding Path=OperationsComboBox}" SelectedValue="{Binding Path=OperationComboBoxSelected}"  />
+                    <Button Grid.Column="2" Content="DO IT!" Margin="0 0 10 0" Command="{Binding DoOperationButton}" />
+                </Grid>
 
             </StackPanel>
-            
+
             <!-- Charts -->
             <StackPanel Grid.Column="1" Margin="10 0 0 0"
                 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -75,7 +126,11 @@
                             <lvc:Axis Title="f(x)" LabelFormatter="{Binding YFormatter}"></lvc:Axis>
                         </lvc:CartesianChart.AxisY>
                         <lvc:CartesianChart.AxisX>
-                            <lvc:Axis Title="t[s]" Labels="{Binding Labels}"></lvc:Axis>
+                            <lvc:Axis Title="t[s]" Labels="{Binding Labels}" LabelsRotation="125">
+                                <lvc:Axis.Separator>
+                                    <lvc:Separator IsEnabled="False" Step="1"></lvc:Separator>
+                                </lvc:Axis.Separator>
+                            </lvc:Axis>
                         </lvc:CartesianChart.AxisX>
                     </lvc:CartesianChart>
                 </Grid>
@@ -83,3 +138,4 @@
         </Grid>
     </Border>
 </Window>
+ 
