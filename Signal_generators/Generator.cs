@@ -15,8 +15,6 @@ namespace Signal_generators
         private Random rand = new Random();
 
 
-        //TODO: Gaussian noise check
-        //https://stackoverflow.com/questions/218060/random-gaussian-variables - Gaussian noise
         public double SteadyNoise()
         {
             return rand.NextDouble() * 2 * Amplitude - Amplitude;
@@ -51,7 +49,6 @@ namespace Signal_generators
 
         private bool Rect(double time)
         {
-            //TODO: BUT WHY I HAVE TO DO DIS?????
             time = Math.Round(time, 6);
             if (FillFactor < 0 || FillFactor > 1)
             {
@@ -93,7 +90,6 @@ namespace Signal_generators
 
         public double UnitJump(double time)
         {
-            //TODO: BUT WHY I HAVE TO DO DIS?????
             time = Math.Round(time, 6);
             if (time > STime)
             {
@@ -111,7 +107,6 @@ namespace Signal_generators
 
         public double UnitImpulse(double time)
         {
-            //TODO: BUT WHY I HAVE TO DO DIS?????
             time = Math.Round(time, 6);
             if (time .Equals(STime) ) return Amplitude;
             return 0;

@@ -1,62 +1,76 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace SignalUtils
 {
     public static class Statistics
     {
-        public static double AvgSignal(double t1, double t2, Func<double, double> func)
+        public static bool IsScattered;
+        public static double AvgSignal(double t1, double t2, List<double> values)
         {
-            return 1 / (t2 - t1) * Integral(t1, t2, func);
+            if (IsScattered)
+            {
+                return 1.0 / values.Count * Sum(values);
+            }
+            return 1 / (t2 - t1) * Integral(Math.Abs((t2 - t1) / values.Count), values);
         }
 
-        public static double SignalVariance(double t1, double t2, Func<double, double> func)
+        public static double SignalVariance(double t1, double t2, List<double> values)
         {
-            return 1 / (t2 - t1) * Integral(t1, t2, func, d => Math.Pow(d - AvgSignal(t1, t2, func), 2));
+            if (IsScattered)
+            {
+                return 1.0 / values.Count * Sum(values, d => Math.Pow(d - AvgSignal(t1, t2, values), 2));
+            }
+            return 1 / (t2 - t1) * Integral(Math.Abs((t2 - t1) / values.Count), values, d => Math.Pow(d - AvgSignal(t1, t2, values), 2));
 
         }
-        public static double AbsAvgSignal(double t1, double t2, Func<double, double> func)
+        public static double AbsAvgSignal(double t1, double t2, List<double> values)
         {
-            return 1 / (t2 - t1) * Integral(t1, t2, func, Math.Abs);
+            if (IsScattered)
+            {
+                return 1.0 / values.Count * Sum(values, Math.Abs);
+            }
+            return 1 / (t2 - t1) * Integral(Math.Abs((t2 - t1) / values.Count), values, Math.Abs);
         }
 
-        public static double AvgSignalPower(double t1, double t2, Func<double, double> func)
+        public static double AvgSignalPower(double t1, double t2, List<double> values)
         {
-            return 1 / (t2 - t1) * Integral(t1, t2, func, d => d * d);
+            if (IsScattered)
+            {
+                return 1.0 / values.Count * Sum(values, d => d * d);
+            }
+            return 1 / (t2 - t1) * Integral(Math.Abs((t2 - t1) / values.Count), values, d => d * d);
         }
 
-        public static double RMSSignal(double t1, double t2, Func<double, double> func)
+        public static double RMSSignal(double t1, double t2, List<double> values)
         {
-            return Math.Sqrt(AvgSignalPower(t1, t2, func));
+            return Math.Sqrt(AvgSignalPower(t1, t2, values));
         }
 
-        private static double Integral(double t1, double t2, Func<double, double> func, Func<double, double> additionalFunc = null)
+        private static double Integral(double dx, List<double> values, Func<double, double> additionalFunc = null)
         {
-            var dx = (t2 - t1) / 1000;
-
             double integral = 0;
-            for (int i = 0; i < 1000; i++)
+            foreach (var value in values)
             {
                 if (additionalFunc != null)
-                    integral += additionalFunc(func(t1 + i * dx));
+                    integral += additionalFunc(value);
                 else
-                    integral += func(t1 + i * dx);
-
+                    integral += value;
             }
             integral *= dx;
 
             return integral;
         }
 
-        private static double Sum(int n1, int n2, Func<double, double> func,
-            Func<double, double> additionalFunc = null)
+        private static double Sum(List<double> values, Func<double, double> additionalFunc = null)
         {
             double sum = 0;
-            for (int i = n1; i < n2; i++)
+            foreach (var value in values)
             {
                 if (additionalFunc != null)
-                    sum += additionalFunc(func(i));
+                    sum += additionalFunc(value);
                 else
-                    sum += func(i);
+                    sum += value;
             }
 
             return sum;

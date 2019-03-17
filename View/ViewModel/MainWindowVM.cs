@@ -18,7 +18,7 @@ namespace View.ViewModel
     {
         private string _signalComboBoxSelected;
 
-        private Dictionary<int, DataHandler> _dict = new Dictionary<int, DataHandler>();
+        private List<DataHandler> _dataHandlers = new List<DataHandler>();
         private List<string> _signals = new List<string>();
 
         //VM FIELDS
@@ -200,9 +200,9 @@ namespace View.ViewModel
         private void PopulateSignalsList()
         {
             _signals = new List<string>();
-            foreach (KeyValuePair<int, DataHandler> keyValuePair in _dict)
+            foreach (var handler in _dataHandlers)
             {
-                _signals.Add($"{keyValuePair.Key}. {keyValuePair.Value.Signal}");
+                _signals.Add($"{_dataHandlers.IndexOf(handler)}. {handler.Signal}");
             }
             SignalsComboBox = new CollectionView(_signals);
             AdditionalSignalsComboBox = new CollectionView(_signals);
@@ -219,7 +219,8 @@ namespace View.ViewModel
             try
             {
                 var chosen = MainComboBoxSelected.Substring(0, 1);
-                _dict.Remove(int.Parse(chosen));
+                _dataHandlers.RemoveAt(int.Parse(chosen));
+                _dataHandlers.TrimExcess();
 
             }
             catch (Exception e)
@@ -247,7 +248,7 @@ namespace View.ViewModel
 
                 );
                 dataHandler.Call();
-                _dict.Add(_dict.Count, dataHandler);
+                _dataHandlers.Add(dataHandler);
 
             }
             catch (Exception e)
@@ -275,23 +276,22 @@ namespace View.ViewModel
                 {
 
                     case "Add":
-                        result = SignalUtils.Operations.Add(_dict[first].Y, _dict[second].Y);
+                        result = SignalUtils.Operations.Add(_dataHandlers[first].Y, _dataHandlers[second].Y);
                         break;
                     case "Subtract":
-                        result = SignalUtils.Operations.Subtract(_dict[first].Y, _dict[second].Y);
+                        result = SignalUtils.Operations.Subtract(_dataHandlers[first].Y, _dataHandlers[second].Y);
                         break;
                     case "Multiply":
-                        result = SignalUtils.Operations.Multiply(_dict[first].Y, _dict[second].Y);
+                        result = SignalUtils.Operations.Multiply(_dataHandlers[first].Y, _dataHandlers[second].Y);
                         break;
                     case "Divide":
-                        result = SignalUtils.Operations.Divide(_dict[first].Y, _dict[second].Y);
+                        result = SignalUtils.Operations.Divide(_dataHandlers[first].Y, _dataHandlers[second].Y);
                         break;
                 }
-                //TODO: Dodawanie do słownika sprawdzić czy klucz już istnieje - metoda do tego
-                _dict.Add(_dict.Count, new DataHandler()
+                _dataHandlers.Add( new DataHandler()
                 {
                     Signal = "result",
-                    X = _dict[0].X,
+                    X = _dataHandlers[0].X,
                     Y = result
                 });
                 DrawChart();
@@ -317,21 +317,21 @@ namespace View.ViewModel
                 switch (DrawModeRadioBTN)
                 {
                     case RadioButtonsEnum.LineSeries:
-                        foreach (KeyValuePair<int, DataHandler> entry in _dict)
+                        foreach (var entry in _dataHandlers)
                         {
                             ChartValues<ObservablePoint> lineValues = new ChartValues<ObservablePoint>();
-                            for (int i = 0; i < entry.Value.X.Count; i++)
+                            for (int i = 0; i < entry.X.Count; i++)
                             {
-                                lineValues.Add(new ObservablePoint(entry.Value.X[i], entry.Value.Y[i]));
+                                lineValues.Add(new ObservablePoint(entry.X[i], entry.Y[i]));
                             }
 
-                            if (entry.Value.IsScattered)
+                            if (entry.IsScattered)
                             {
                                 SeriesCollection.Add(new ScatterSeries()
                                 {
                                     PointGeometry = new EllipseGeometry(),
                                     StrokeThickness = 8,
-                                    Title = $"{entry.Key}. {entry.Value.Signal}",
+                                    Title = $"{_dataHandlers.IndexOf(entry)}. {entry.Signal}",
                                     Values = lineValues
                                 });
                             }
@@ -340,7 +340,7 @@ namespace View.ViewModel
                                 SeriesCollection.Add(new LineSeries()
                                 {
                                     Fill = Brushes.Transparent,
-                                    Title = $"{entry.Key}. {entry.Value.Signal}",
+                                    Title = $"{_dataHandlers.IndexOf(entry)}. {entry.Signal}",
                                     Values = lineValues,
                                     PointGeometry = null
                                 });
@@ -353,7 +353,7 @@ namespace View.ViewModel
                     case RadioButtonsEnum.Histogram:
                         var option = int.Parse(MainComboBoxSelected.Substring(0, 1));
                         HistogramValues = new ChartValues<double>();
-                        var HistData = _dict[option].ExtractHistogramData(NumberOfColumnsTB);
+                        var HistData = _dataHandlers[option].ExtractHistogramData(NumberOfColumnsTB);
                         Labels = new string[HistData.Count];
                         for (int i = 0; i < HistData.Count; i++)
                         {
