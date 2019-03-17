@@ -96,9 +96,9 @@ namespace Signal_generators
                 throw new ArgumentException("Number of columns must be a positive integer.");
             }
             List<List<double>> histogramData = new List<List<double>>();
-            double minValue = Y.Min();
-            double maxValue = Y.Max();
-            double delta = (Math.Abs(Y.Max() - Y.Min())) / numberOfColumns;
+            double minValue = Math.Floor(Y.Min());
+            double maxValue = Math.Ceiling(Y.Max());
+            double delta = Math.Round(Math.Abs(Y.Max() - Y.Min()) / numberOfColumns, 3);
             double lowerBound = 0;
             double upperBound = 0;
             //TODO: Iteracja po num of columns!
