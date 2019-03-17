@@ -45,5 +45,11 @@
     <Compile Include="Generator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SignalUtils\SignalUtils.csproj">
+      <Project>{35a979e8-5374-41cc-95a1-4363ac53d21f}</Project>
+      <Name>SignalUtils</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

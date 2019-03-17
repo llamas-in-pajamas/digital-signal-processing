@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using SignalUtils;
 
 namespace Signal_generators
 {
@@ -22,6 +23,11 @@ namespace Signal_generators
         public List<double> X = new List<double>();
         public List<double> Y = new List<double>();
 
+        public double Mean { get; set; }
+        public double AbsMean { get; set; }
+        public double AvgPower { get; set; }
+        public double Rms { get; set; }
+        public double Variance { get; set; }
 
         public DataHandler()
         {
@@ -101,25 +107,35 @@ namespace Signal_generators
                 throw new ArgumentException("Number of columns must be a positive integer.");
             }
             List<List<double>> histogramData = new List<List<double>>();
-            double minValue = Math.Floor(Y.Min());
-            double maxValue = Math.Ceiling(Y.Max());
-            double delta = Math.Round(Math.Abs(Y.Max() - Y.Min()) / numberOfColumns, 3);
+            double minValue = Y.Min();
+            double delta = Math.Abs(Y.Max() - Y.Min()) / numberOfColumns;
             double lowerBound = 0;
             double upperBound = 0;
             //TODO: Iteracja po num of columns!
-            for (double i = minValue; i < maxValue; i += delta)
+            for (double i = 0; i < numberOfColumns; i++)
             {
                 List<double> data = new List<double>();
-                lowerBound = i;
-                upperBound = i + delta;
+                lowerBound = minValue;
+                upperBound = minValue + delta;
                 data.Add(lowerBound);
                 data.Add(upperBound);
-                data.Add(Y.Count(n => (n >= lowerBound && n < upperBound)));
+                data.Add(Y.Count(n => (n >= lowerBound && n <= upperBound)));
                 histogramData.Add(data);
+                minValue += delta;
             }
 
             return histogramData;
         }
+
+        private void GenerateStats(Func<double, double> func)
+        {
+            Mean = Statistics.AvgSignal(_startTime, _endTime, func);
+            AbsMean = Statistics.AbsAvgSignal(_startTime, _endTime, func);
+            Variance = Statistics.SignalVariance(_startTime, _endTime, func);
+            Rms = Statistics.RMSSignal(_startTime, _endTime, func);
+            AvgPower = Statistics.AvgSignalPower(_startTime, _endTime, func);
+        }
+
         //TODO: Calculation for discrete impulses
         private int CalculateNumberOfSamples()
         {
@@ -142,6 +158,7 @@ namespace Signal_generators
                 X.Add(i);
                 Y.Add(_generator.UnitImpulse(i));
             }
+            GenerateStats((i) => _generator.UnitImpulse(i));
         }
         private void GenerateImpulseNoise() //Probability needed
         {
@@ -150,6 +167,7 @@ namespace Signal_generators
                 X.Add(i);
                 Y.Add(_generator.ImpulseNoise());
             }
+            GenerateStats((i) => _generator.ImpulseNoise());
         }
         private void GenerateGaussianNoise()
         {
@@ -158,6 +176,7 @@ namespace Signal_generators
                 X.Add(i);
                 Y.Add(_generator.GaussianNoise());
             }
+            GenerateStats((i) => _generator.GaussianNoise());
         }
         private void GenerateSteadyNoise()
         {
@@ -166,6 +185,7 @@ namespace Signal_generators
                 X.Add(i);
                 Y.Add(_generator.SteadyNoise());
             }
+            GenerateStats((i) => _generator.SteadyNoise());
         }
 
         private void GenerateTriangular() //FillFactor needed
@@ -175,6 +195,7 @@ namespace Signal_generators
                 X.Add(i);
                 Y.Add(_generator.Triangular(i));
             }
+            GenerateStats((i) => _generator.Triangular(i));
         }
         private void GenerateUnitJump() //STime Needed
         {
@@ -183,6 +204,7 @@ namespace Signal_generators
                 X.Add(i);
                 Y.Add(_generator.UnitJump(i));
             }
+            GenerateStats((i) => _generator.UnitJump(i));
         }
         private void GenerateSymetricRectangular() //FillFactor needed
         {
@@ -191,6 +213,7 @@ namespace Signal_generators
                 X.Add(i);
                 Y.Add(_generator.RectanguralSymetrical(i));
             }
+            GenerateStats((i) => _generator.RectanguralSymetrical(i));
         }
 
         private void GenerateRectangular() //FillFactor needed
@@ -200,6 +223,7 @@ namespace Signal_generators
                 X.Add(i);
                 Y.Add(_generator.Rectangural(i));
             }
+            GenerateStats((i) => _generator.Rectangural(i));
         }
 
         private void GenerateSinus2P()
@@ -209,6 +233,7 @@ namespace Signal_generators
                 X.Add(i);
                 Y.Add(_generator.Sinusoidal2P(i));
             }
+            GenerateStats((i) => _generator.Sinusoidal2P(i));
         }
 
         private void GenerateSinus1P()
@@ -218,6 +243,7 @@ namespace Signal_generators
                 X.Add(i);
                 Y.Add(_generator.Sinusoidal1P(i));
             }
+            GenerateStats((i) => _generator.Sinusoidal1P(i));
         }
 
         private void GenerateSinus()
@@ -227,7 +253,7 @@ namespace Signal_generators
                 X.Add(i);
                 Y.Add(_generator.Sinusoidal(i));
             }
-
+            GenerateStats((i) => _generator.Sinusoidal(i));
         }
     }
 }

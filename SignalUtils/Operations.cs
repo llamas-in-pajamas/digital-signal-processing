@@ -54,10 +54,6 @@ namespace SignalUtils
         public static List<double> Divide(List<double> list1, List<double> list2)
         {
             ListValidator(list1, list2);
-            if (list2.Contains(0))
-            {
-                throw new DivideByZeroException();
-            }
 
             List<double> list = new List<double>(list1.Count);
             for (int i = 0, length = list1.Count; i < length; i++)

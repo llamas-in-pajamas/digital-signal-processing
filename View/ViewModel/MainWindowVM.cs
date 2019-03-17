@@ -357,7 +357,7 @@ namespace View.ViewModel
                         Labels = new string[HistData.Count];
                         for (int i = 0; i < HistData.Count; i++)
                         {
-                            Labels[i] = $"<{Math.Round(HistData[i][0], 2) }, {Math.Round(HistData[i][1], 2) })";
+                            Labels[i] = $"<{Math.Round(HistData[i][0], 2) }, {Math.Round(HistData[i][1], 2) }>";
                             HistogramValues.Add(HistData[i][2]);
                         }
                         SeriesCollection = new SeriesCollection

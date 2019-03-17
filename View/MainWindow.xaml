@@ -52,12 +52,22 @@
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Button Grid.Column="0" Content="Add" Command="{Binding GenerateButton}" />
+                    <Button Grid.Column="1" Content="Remove" Margin="10 0 0 0" Command="{Binding RemoveButton}" ToolTip="Specify Chart to remove in Main Combobox" />
+
+                </Grid>
+
+                <Grid Margin="0 10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
 
-                    <Button Grid.Column="0" Content="Generate" Margin="0 0 10 0" Command="{Binding GenerateButton}" />
-                    <Button Grid.Column="1" Content="Save" />
-                    <Button Grid.Column="2" Content="Load" Margin="10 0 0 0"/>
+                    <Button Grid.Column="0" Content="Save" />
+                    <Button Grid.Column="1" Content="Load" Margin="10 0 0 0"/>
+
                 </Grid>
                 <Grid Margin="0 10">
                     <Grid.ColumnDefinitions>
@@ -70,7 +80,7 @@
                                  ConverterParameter=LineSeries}" />
                     <RadioButton Grid.Column="1" Content="Histogram" GroupName="DrawOptions" IsChecked="{Binding Path=DrawModeRadioBTN, Mode=TwoWay, 
                                  Converter={StaticResource enumConverter},
-                                 ConverterParameter=Histogram}" />
+                                 ConverterParameter=Histogram}" ToolTip="Specify Chart to display in Main Combobox" />
                 </Grid>
                 <Grid Margin="0 10">
                     <Grid.ColumnDefinitions>
@@ -98,7 +108,7 @@
                     <TextBlock Text="Additional: " TextAlignment="Right" />
                     <ComboBox Grid.Column="1" ItemsSource="{Binding Path=AdditionalSignalsComboBox}" SelectedValue="{Binding Path=AdditionalComboBoxSelected}"  />
                 </Grid>
-                <Button Grid.Column="0" Content="Remove" Margin="0 0 10 0" Command="{Binding RemoveButton}" />
+                
                 <Grid Margin="0 5">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
