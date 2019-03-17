@@ -4,6 +4,7 @@ using LiveCharts.Wpf;
 using Signal_generators;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
@@ -205,6 +206,11 @@ namespace View.ViewModel
             }
             SignalsComboBox = new CollectionView(_signals);
             AdditionalSignalsComboBox = new CollectionView(_signals);
+            if (_signals.Count > 0)
+            {
+                AdditionalComboBoxSelected = _signals.Last();
+            }
+
         }
 
         private void RemoveChart()
@@ -295,9 +301,9 @@ namespace View.ViewModel
             {
                 MessageBox.Show($"Error has occured: {e.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-            
+
             PopulateSignalsList();
-            
+
         }
 
         private void DrawChart()
@@ -343,7 +349,7 @@ namespace View.ViewModel
                         }
 
                         break;
-                        
+
                     case RadioButtonsEnum.Histogram:
                         var option = int.Parse(MainComboBoxSelected.Substring(0, 1));
                         HistogramValues = new ChartValues<double>();
