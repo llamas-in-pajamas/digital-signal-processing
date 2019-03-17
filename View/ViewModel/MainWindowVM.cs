@@ -44,7 +44,7 @@ namespace View.ViewModel
             {
                 _drawModeRadioBTN = value;
                 OnPropertyChanged(nameof(DrawModeRadioBTN));
-                ResolveAdditionalValues(value.ToString());
+                ColumnsTBVisibility = DrawModeRadioBTN == RadioButtonsEnum.Histogram;
                 DrawChart();
             }
         }
@@ -59,6 +59,8 @@ namespace View.ViewModel
                 DrawChart();
             }
         }
+
+
 
         public CollectionView SignalsComboBox { get; set; }
         public CollectionView AdditionalSignalsComboBox { get; set; }
@@ -97,6 +99,8 @@ namespace View.ViewModel
                 {
                     DrawChart();
                 }
+
+                LoadStatistics();
                 OnPropertyChanged(nameof(SignalsComboBox));
             }
         }
@@ -136,6 +140,12 @@ namespace View.ViewModel
 
         public double ProbabilityTextBox { get; set; }
 
+
+        public double SignalAverageTextBox { get; set; }
+        public double SignalVarianceTextBox { get; set; }
+        public double SignalAbsoluteAverageTextBox { get; set; }
+        public double SignalAveragePowerTextBox { get; set; }
+        public double SignalRMSTextBox { get; set; }
 
         #endregion
 
@@ -197,15 +207,33 @@ namespace View.ViewModel
 
         #region methods
 
+        private void LoadStatistics()
+        {
+
+            if (_dataHandlers.Count > 0)
+            {
+                var option = int.Parse(MainComboBoxSelected.Substring(0, 1));
+                SignalAverageTextBox = _dataHandlers[option].Mean;
+                SignalVarianceTextBox = _dataHandlers[option].Variance;
+                SignalAbsoluteAverageTextBox = _dataHandlers[option].AbsMean;
+                SignalAveragePowerTextBox = _dataHandlers[option].AvgPower;
+                SignalRMSTextBox = _dataHandlers[option].Rms;
+
+            }
+        }
+
         private void PopulateSignalsList()
         {
+            
             _signals = new List<string>();
             foreach (var handler in _dataHandlers)
             {
                 _signals.Add($"{_dataHandlers.IndexOf(handler)}. {handler.Signal}");
             }
+
             SignalsComboBox = new CollectionView(_signals);
             AdditionalSignalsComboBox = new CollectionView(_signals);
+
             if (_signals.Count > 0)
             {
                 AdditionalComboBoxSelected = _signals.Last();
@@ -249,6 +277,7 @@ namespace View.ViewModel
                 );
                 dataHandler.Call();
                 _dataHandlers.Add(dataHandler);
+                DrawChart();
 
             }
             catch (Exception e)
@@ -256,7 +285,7 @@ namespace View.ViewModel
                 MessageBox.Show($"Error has occured: {e.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             PopulateSignalsList();
-            DrawChart();
+            
 
         }
 
@@ -288,7 +317,7 @@ namespace View.ViewModel
                         result = SignalUtils.Operations.Divide(_dataHandlers[first].Y, _dataHandlers[second].Y);
                         break;
                 }
-                _dataHandlers.Add( new DataHandler()
+                _dataHandlers.Add(new DataHandler()
                 {
                     Signal = "result",
                     X = _dataHandlers[0].X,
@@ -387,9 +416,7 @@ namespace View.ViewModel
             FillFactorTBVisibility = false;
             UnitEventTBVisibility = false;
             ProbabilityTBVisibility = false;
-            ColumnsTBVisibility = DrawModeRadioBTN == RadioButtonsEnum.Histogram;
-
-
+            
             switch (value)
             {
                 case "Sinus":
@@ -421,7 +448,6 @@ namespace View.ViewModel
                 case "Unit Impulse":
                     UnitEventTBVisibility = true;
                     break;
-
 
             }
         }

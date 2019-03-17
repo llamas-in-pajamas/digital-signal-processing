@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:View"
         xmlns:converters="clr-namespace:View.Converters"
         mc:Ignorable="d"
-        Title="Digital Signal Processing" Height="640" Width="1024">
+        Title="Digital Signal Processing" Height="700" Width="1024">
 
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
@@ -120,6 +120,8 @@
                     <Button Grid.Column="2" Content="DO IT!" Margin="0 0 10 0" Command="{Binding DoOperationButton}" />
                 </Grid>
 
+                   <TextBlock Margin="0 15 0 0" Text="Graph selected in main combobox will be used to display histogram and signal statistics values, removing and saving" TextWrapping="Wrap" />
+
             </StackPanel>
 
             <!-- Charts -->
@@ -130,7 +132,7 @@
                 xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
                 xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf" 
                >
-                <Grid Height="500">
+                <Grid Height="550">
                     <lvc:CartesianChart Series="{Binding SeriesCollection}" LegendLocation="Right" DisableAnimations="True" Hoverable="False" DataTooltip="{x:Null}" >
                         <lvc:CartesianChart.AxisY>
                             <lvc:Axis Title="f(x)" LabelFormatter="{Binding YFormatter}"></lvc:Axis>
@@ -143,6 +145,33 @@
                             </lvc:Axis>
                         </lvc:CartesianChart.AxisX>
                     </lvc:CartesianChart>
+                </Grid>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0">
+                        <TextBlock Text="Signal Average: " TextAlignment="Right" Margin="0 0 5 5"/>
+                        <TextBlock Text="Signal Variance: " TextAlignment="Right" Margin="0 0 5 5" />
+                        <TextBlock Text="AbsAvgSignal: " TextAlignment="Right" Margin="0 0 5 5" />
+                        
+                    </StackPanel>
+                    <StackPanel Grid.Column="1">
+                        <TextBox Padding="2" Text="{Binding SignalAverageTextBox}" IsReadOnly="True"  />
+                        <TextBox Padding="2" Text="{Binding SignalVarianceTextBox}" IsReadOnly="True"  />
+                        <TextBox Padding="2" Text="{Binding SignalAbsoluteAverageTextBox}" IsReadOnly="True"  />
+                    </StackPanel>
+                    <StackPanel Grid.Column="2">
+                        <TextBlock Text="AvgSignalPower: " TextAlignment="Right" Margin="0 0 5 5" />
+                        <TextBlock Text="RMSSignal: " TextAlignment="Right" Margin="0 0 5 5" />
+                    </StackPanel>
+                    <StackPanel Grid.Column="3">
+                        <TextBox Padding="2" Text="{Binding SignalAveragePowerTextBox}" IsReadOnly="True"  />
+                        <TextBox Padding="2" Text="{Binding SignalRMSTextBox}" IsReadOnly="True"  />
+                    </StackPanel>
                 </Grid>
             </StackPanel>
         </Grid>
