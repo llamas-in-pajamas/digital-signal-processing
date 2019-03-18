@@ -33,6 +33,7 @@ namespace Signal_generators
         {
 
         }
+
         public DataHandler(double amplitude, double duration, double startTime, double period, string signal, double fillFactor, double sTime, double probability)
         {
             _generator.Amplitude = amplitude;
@@ -85,8 +86,8 @@ namespace Signal_generators
                 case "Triangular":
                     GenerateTriangular();
                     break;
-                case "Steady Noise":
-                    GenerateSteadyNoise();
+                case "Uniform Noise":
+                    GenerateUniformNoise();
                     break;
                 case "Gaussian Noise":
                     GenerateGaussianNoise();
@@ -174,12 +175,12 @@ namespace Signal_generators
                 Y.Add(_generator.GaussianNoise());
             }
         }
-        private void GenerateSteadyNoise()
+        private void GenerateUniformNoise()
         {
             for (double i = _startTime; i < _endTime; i += _delta)
             {
                 X.Add(i);
-                Y.Add(_generator.SteadyNoise());
+                Y.Add(_generator.UniformNoise());
             }
             
         }

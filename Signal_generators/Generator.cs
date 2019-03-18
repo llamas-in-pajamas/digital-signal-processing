@@ -15,7 +15,7 @@ namespace Signal_generators
         private Random rand = new Random();
 
 
-        public double SteadyNoise()
+        public double UniformNoise()
         {
             return rand.NextDouble() * 2 * Amplitude - Amplitude;
         }

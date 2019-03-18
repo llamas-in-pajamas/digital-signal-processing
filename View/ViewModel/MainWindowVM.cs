@@ -177,7 +177,7 @@ namespace View.ViewModel
                 "Symetric Rectangular",
                 "Unit Jump",
                 "Triangular",
-                "Steady Noise",
+                "Uniform Noise",
                 "Gaussian Noise",
                 "Impulse Noise",
                 "Unit Impulse"
@@ -188,7 +188,6 @@ namespace View.ViewModel
                 "Subtract",
                 "Multiply",
                 "Divide"
-
             };
 
             OperationsComboBox = new CollectionView(list1);
@@ -341,8 +340,6 @@ namespace View.ViewModel
             try
             {
                 SeriesCollection = new SeriesCollection();
-
-
                 switch (DrawModeRadioBTN)
                 {
                     case RadioButtonsEnum.LineSeries:
@@ -376,7 +373,6 @@ namespace View.ViewModel
 
                             }
                         }
-
                         break;
 
                     case RadioButtonsEnum.Histogram:
@@ -400,10 +396,7 @@ namespace View.ViewModel
 
                         };
                         break;
-
                 }
-
-
             }
             catch (Exception e)
             {
@@ -438,7 +431,7 @@ namespace View.ViewModel
                 case "Triangular":
                     FillFactorTBVisibility = true;
                     break;
-                case "Steady Noise":
+                case "Uniform Noise":
                     break;
                 case "Gaussian Noise":
                     break;
