@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Signal_generators
+namespace SignalGenerators
 {
     public class Generator
     {

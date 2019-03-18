@@ -127,9 +127,9 @@
       <Project>{35a979e8-5374-41cc-95a1-4363ac53d21f}</Project>
       <Name>SignalUtils</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Signal_generators\Signal_generators.csproj">
+    <ProjectReference Include="..\Signal_generators\SignalGenerators.csproj">
       <Project>{17e0426c-09bf-403d-8982-ca880689a01c}</Project>
-      <Name>Signal_generators</Name>
+      <Name>SignalGenerators</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

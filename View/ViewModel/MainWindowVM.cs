@@ -1,16 +1,18 @@
 ﻿using LiveCharts;
 using LiveCharts.Defaults;
 using LiveCharts.Wpf;
-using Signal_generators;
+using SignalGenerators;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using View.Helper;
 using View.ViewModel.Base;
+using Microsoft.Win32;
 
 namespace View.ViewModel
 {
@@ -32,6 +34,9 @@ namespace View.ViewModel
         public ICommand GenerateButton { get; }
         public ICommand RemoveButton { get; }
         public ICommand DoOperationButton { get; }
+        public ICommand SaveButton { get; }
+        public ICommand LoadButton { get; }
+
 
         #region props
 
@@ -197,6 +202,8 @@ namespace View.ViewModel
             DrawModeRadioBTN = RadioButtonsEnum.LineSeries;
             RemoveButton = new RelayCommand(RemoveChart);
             DoOperationButton = new RelayCommand(Operations);
+            SaveButton = new RelayCommand(async () => await Task.Run(() => SaveSignal()));
+            LoadButton = new RelayCommand(LoadSignal);
 
             AmplitudeTextBox = 1.0;
             PeriodTextBox = 1.0;
@@ -205,6 +212,40 @@ namespace View.ViewModel
         }
 
         #region methods
+
+        private void LoadSignal()
+        {
+            string path = String.Empty;
+            OpenFileDialog openFileDialog = new OpenFileDialog()
+            {
+                RestoreDirectory = true,
+            };
+
+            if (openFileDialog.ShowDialog() == true)
+            {
+                path = openFileDialog.FileName;
+                DataHandler dataHandler = new DataHandler();
+                dataHandler.Load(path);
+                _dataHandlers.Add(dataHandler);
+                PopulateSignalsList();
+                DrawChart();
+            }
+        }
+
+        private void SaveSignal()
+        {
+            string path = String.Empty; 
+            SaveFileDialog saveFileDialog = new SaveFileDialog()
+            {
+                RestoreDirectory = true,
+            };
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                path = saveFileDialog.FileName;
+                var option = int.Parse(MainComboBoxSelected.Substring(0, 1));
+                _dataHandlers[option].Save(path);
+            }
+        }
 
         private void LoadStatistics()
         {
@@ -287,11 +328,6 @@ namespace View.ViewModel
             
 
         }
-
-        /*private void RemoveSignal(int key)
-        {
-            _dict.Remove(key);
-        }*/
 
         private void Operations()
         {
@@ -377,8 +413,8 @@ namespace View.ViewModel
 
                     case RadioButtonsEnum.Histogram:
                         var option = int.Parse(MainComboBoxSelected.Substring(0, 1));
-                        HistogramValues = new ChartValues<double>();
                         var HistData = _dataHandlers[option].ExtractHistogramData(NumberOfColumnsTB);
+                        HistogramValues = new ChartValues<double>();
                         Labels = new string[HistData.Count];
                         for (int i = 0; i < HistData.Count; i++)
                         {

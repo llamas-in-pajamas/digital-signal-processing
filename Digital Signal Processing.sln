@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.136
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Signal_generators", "Signal_generators\Signal_generators.csproj", "{17E0426C-09BF-403D-8982-CA880689A01C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SignalGenerators", "Signal_generators\SignalGenerators.csproj", "{17E0426C-09BF-403D-8982-CA880689A01C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "View", "View\View.csproj", "{A1143B62-7F24-4AD4-BFF4-EF1FE218DDB9}"
 EndProject

@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using SignalUtils;
 
-namespace Signal_generators
+namespace SignalGenerators
 {
     public class DataHandler
     {
@@ -55,6 +56,60 @@ namespace Signal_generators
             }
         }
 
+        public void Load(string path)
+        {
+            using (BinaryReader reader = new BinaryReader(File.OpenRead(path)))
+            {
+                Y = new List<double>();
+                _startTime = reader.ReadDouble();
+                double frequency = reader.ReadDouble();
+                _period = 1.0 / frequency;
+
+                for (int i = 0, n = reader.ReadInt32(); i < n; i++)
+                {
+                    Y.Add(reader.ReadDouble());
+                }
+                X = new List<double>();
+                for (int i = 0; i < Y.Count; i++)
+                {
+                    X.Add(_startTime + i / frequency);
+                }
+                _endTime = X.Last();
+                IsScattered = true;
+                Signal = Path.GetFileName(path);
+                GenerateStats();
+            }
+        }
+
+        public void Save(string path)
+        {
+            SaveToBinary(path);
+            SaveToTxt(path);
+        }
+
+        private void SaveToBinary(string path)
+        {
+            using (BinaryWriter writer = new BinaryWriter(File.Create(path)))
+            {
+                writer.Write(_startTime);
+                writer.Write(1.0 / _period);
+                writer.Write(Y.Count);
+                foreach (double sample in Y) writer.Write(sample);
+            }
+        }
+
+        private void SaveToTxt(string path)
+        {
+            path = Path.ChangeExtension(path, ".txt");
+            using (StreamWriter writer = new StreamWriter(path))
+            {
+                writer.WriteLine("t_1[s]: " + _startTime);
+                writer.WriteLine("f[Hz]: " + 1.0 / _period);
+                writer.WriteLine("Y.Count: " + Y.Count);
+                foreach (double sample in Y) writer.WriteLine(sample);
+            }
+        }
+
         public void Call()
         {
 
@@ -101,7 +156,7 @@ namespace Signal_generators
                 default:
                     throw new NotImplementedException();
             }
-            GenerateStats(Y);
+            GenerateStats();
 
         }
 
@@ -131,7 +186,7 @@ namespace Signal_generators
             return histogramData;
         }
 
-        private void GenerateStats(List<double> values)
+        private void GenerateStats()
         {
             Mean = Statistics.AvgSignal(_startTime, _endTime, Y);
             AbsMean = Statistics.AbsAvgSignal(_startTime, _endTime, Y);
