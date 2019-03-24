@@ -1,8 +1,8 @@
-﻿using System;
+﻿using SignalUtils;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using SignalUtils;
 
 namespace SignalGenerators
 {
@@ -29,6 +29,9 @@ namespace SignalGenerators
         public double AvgPower { get; set; }
         public double Rms { get; set; }
         public double Variance { get; set; }
+
+        private List<double> _ysToSave = new List<double>();
+        private double _samplingFrequency;
 
         public DataHandler()
         {
@@ -81,10 +84,42 @@ namespace SignalGenerators
             }
         }
 
-        public void Save(string path)
+        public void Save(string path, double samplingFrequency)
         {
+            GenerateDataToSave(samplingFrequency);
             SaveToBinary(path);
             SaveToTxt(path);
+        }
+
+        public void GenerateDataToSave(double samplingFrequency)
+        {
+            if (IsScattered)
+            {
+                _samplingFrequency = 1.0 / _period;
+                _ysToSave = Y;
+                return;
+            }
+
+            _samplingFrequency = samplingFrequency;
+            CalculateSamplesToSave(samplingFrequency);
+
+        }
+
+        private void CalculateSamplesToSave(double samplingFrequency)
+        {
+            double period = 1.0 / samplingFrequency;
+            for (double i = _startTime; i < _endTime; i += period)
+            {
+                for (int j = 1; j < X.Count; j++)
+                {
+
+                    if (i >= X[j - 1] && i < X[j])
+                    {
+                        _ysToSave.Add(Y[j - 1]);
+                        break;
+                    }
+                }
+            }
         }
 
         private void SaveToBinary(string path)
@@ -92,9 +127,9 @@ namespace SignalGenerators
             using (BinaryWriter writer = new BinaryWriter(File.Create(path)))
             {
                 writer.Write(_startTime);
-                writer.Write(1.0 / _period);
-                writer.Write(Y.Count);
-                foreach (double sample in Y) writer.Write(sample);
+                writer.Write(_samplingFrequency);
+                writer.Write(_ysToSave.Count);
+                foreach (double sample in _ysToSave) writer.Write(sample);
             }
         }
 
@@ -104,9 +139,9 @@ namespace SignalGenerators
             using (StreamWriter writer = new StreamWriter(path))
             {
                 writer.WriteLine("t_1[s]: " + _startTime);
-                writer.WriteLine("f[Hz]: " + 1.0 / _period);
-                writer.WriteLine("Y.Count: " + Y.Count);
-                foreach (double sample in Y) writer.WriteLine(sample);
+                writer.WriteLine("f[Hz]: " + _samplingFrequency);
+                writer.WriteLine("Y.Count: " + _ysToSave.Count);
+                foreach (double sample in _ysToSave) writer.WriteLine(sample);
             }
         }
 
@@ -237,7 +272,7 @@ namespace SignalGenerators
                 X.Add(i);
                 Y.Add(_generator.UniformNoise());
             }
-            
+
         }
 
         private void GenerateTriangular() //FillFactor needed
