@@ -427,7 +427,8 @@ namespace View.ViewModel
                             new ColumnSeries()
                             {
                                 Title = MainComboBoxSelected,
-                                Values = HistogramValues
+                                Values = HistogramValues,
+                                ColumnPadding = 0.0
                             }
 
                         };
