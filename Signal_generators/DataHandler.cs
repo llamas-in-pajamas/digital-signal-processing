@@ -108,7 +108,7 @@ namespace SignalGenerators
         private void CalculateSamplesToSave(double samplingFrequency)
         {
             double period = 1.0 / samplingFrequency;
-            for (double i = _startTime; i < _endTime; i += period)
+            for (double i = _startTime; i <= _endTime; i += period)
             {
                 for (int j = 1; j < X.Count; j++)
                 {
