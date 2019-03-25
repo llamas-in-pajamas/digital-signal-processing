@@ -65,7 +65,7 @@ namespace View.ViewModel
             }
         }
 
-
+        public double SamplingFrequencyTextBox { get; set; }
 
         public CollectionView SignalsComboBox { get; set; }
         public CollectionView AdditionalSignalsComboBox { get; set; }
@@ -234,17 +234,25 @@ namespace View.ViewModel
 
         private void SaveSignal()
         {
-            string path = String.Empty; 
-            SaveFileDialog saveFileDialog = new SaveFileDialog()
+            try
             {
-                RestoreDirectory = true,
-            };
-            if (saveFileDialog.ShowDialog() == true)
-            {
-                path = saveFileDialog.FileName;
-                var option = int.Parse(MainComboBoxSelected.Substring(0, 1));
-                _dataHandlers[option].Save(path);
+                string path = String.Empty;
+                SaveFileDialog saveFileDialog = new SaveFileDialog()
+                {
+                    RestoreDirectory = true,
+                };
+                if (saveFileDialog.ShowDialog() == true)
+                {
+                    path = saveFileDialog.FileName;
+                    var option = int.Parse(MainComboBoxSelected.Substring(0, 1));
+                    _dataHandlers[option].Save(path, SamplingFrequencyTextBox);
+                }
             }
+            catch (Exception e)
+            {
+                MessageBox.Show($"Error has occured: {e.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            
         }
 
         private void LoadStatistics()
@@ -334,6 +342,7 @@ namespace View.ViewModel
             List<double> result = new List<double>();
             var first = int.Parse(MainComboBoxSelected.Substring(0, 1));
             var second = int.Parse(AdditionalComboBoxSelected.Substring(0, 1));
+            bool isScattered = _dataHandlers[first].IsScattered;
             try
             {
                 switch (OperationComboBoxSelected)
@@ -356,7 +365,8 @@ namespace View.ViewModel
                 {
                     Signal = "result",
                     X = _dataHandlers[0].X,
-                    Y = result
+                    Y = result,
+                    IsScattered = isScattered
                 });
                 DrawChart();
 
