@@ -13,6 +13,23 @@ namespace SignalUtils
                 throw new ArgumentException();
             }
         }
+
+        public static List<double> Reconstruct(List<double> quantizedSignal, int numberOfSamples, double samplingFrequency)
+        {
+            List<double> reconstructedSignal = new List<double>();
+            double period = 1.0 / samplingFrequency;
+            for(int i = 0, j = quantizedSignal.Count; i < j; j++)
+            {
+                double sum = 0;
+                for (int n = 0; n < numberOfSamples; n++)
+                {
+                    sum += quantizedSignal[(int)(n * period)] * SinusCardinalis(i / period - n);
+                }
+                reconstructedSignal.Add(sum);
+            }
+            return reconstructedSignal;
+
+        }
         public static List<double> Add(List<double> list1, List<double> list2)
         {
             ListValidator(list1, list2);
