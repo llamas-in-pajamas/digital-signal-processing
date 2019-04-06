@@ -51,6 +51,31 @@ namespace SignalUtils
             return list;
         }
 
+        public static List<List<double>> Sample(List<double> args, List<double> values, double samplingFrequency)
+        {
+            double period = 1.0 / samplingFrequency;
+            double min = args.Min();
+            double max = args.Max();
+            List<List<double>> signal = new List<List<double>>();
+
+            for(double i = min; i <= max; i += period)
+            {
+                List<double> temp = new List<double>(2);
+                for(int j = 1; j < args.Count; j++)
+                {
+                    if (i >= args[j - 1] && i < args[j])
+                    {
+                        temp.Add(args[j]);
+                        temp.Add(values[j - 1]);
+                        break;
+                    }
+                }
+                signal.Add(temp);
+            }
+
+            return signal;
+        }
+
         public static List<int> Quantize(List<double> values, int numberOfLevels)
         {
             List<double> copy = new List<double>(values);
