@@ -1,6 +1,7 @@
 ﻿using LiveCharts;
 using LiveCharts.Defaults;
 using LiveCharts.Wpf;
+using Microsoft.Win32;
 using SignalGenerators;
 using System;
 using System.Collections.Generic;
@@ -12,7 +13,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using View.Helper;
 using View.ViewModel.Base;
-using Microsoft.Win32;
 
 namespace View.ViewModel
 {
@@ -42,17 +42,6 @@ namespace View.ViewModel
 
         private ChartValues<ObservablePoint> Values { get; set; } = new ChartValues<ObservablePoint>();
         private ChartValues<double> HistogramValues { get; set; } = new ChartValues<double>();
-        public RadioButtonsEnum DrawModeRadioBTN
-        {
-            get => _drawModeRadioBTN;
-            set
-            {
-                _drawModeRadioBTN = value;
-                OnPropertyChanged(nameof(DrawModeRadioBTN));
-                ColumnsTBVisibility = DrawModeRadioBTN == RadioButtonsEnum.Histogram;
-                DrawChart();
-            }
-        }
 
         public int NumberOfColumnsTB
         {
@@ -61,7 +50,7 @@ namespace View.ViewModel
             {
                 _numberOfColumnsTb = value;
                 OnPropertyChanged(nameof(NumberOfColumnsTB));
-                DrawChart();
+                DrawHistogram();
             }
         }
 
@@ -72,9 +61,12 @@ namespace View.ViewModel
 
         public CollectionView SignalComboBox { get; }
         public CollectionView OperationsComboBox { get; }
-        public SeriesCollection SeriesCollection { get; set; }
+        //Chart Props
+        public SeriesCollection SeriesCollection { get; set; } = new SeriesCollection();
+        public SeriesCollection SeriesCollectionHistogram { get; set; } = new SeriesCollection();
 
         public string[] Labels { get; set; }
+        public string[] LabelsHistogram { get; set; }
 
         public Func<double, string> YFormatter { get; set; }
 
@@ -100,11 +92,7 @@ namespace View.ViewModel
             {
                 if (_mainComboBoxSelected == value) return;
                 _mainComboBoxSelected = value;
-                if (DrawModeRadioBTN == RadioButtonsEnum.Histogram)
-                {
-                    DrawChart();
-                }
-
+                DrawHistogram();
                 LoadStatistics();
                 OnPropertyChanged(nameof(SignalsComboBox));
             }
@@ -162,7 +150,7 @@ namespace View.ViewModel
         public bool UnitEventTBVisibility { get; set; }
 
         public bool ProbabilityTBVisibility { get; set; }
-        public bool ColumnsTBVisibility { get; set; }
+        
 
         #endregion
 
@@ -199,7 +187,6 @@ namespace View.ViewModel
             OperationComboBoxSelected = list1[0];
             SignalComboBox = new CollectionView(list);
             SignalComboBoxSelected = list[0];
-            DrawModeRadioBTN = RadioButtonsEnum.LineSeries;
             RemoveButton = new RelayCommand(RemoveChart);
             DoOperationButton = new RelayCommand(Operations);
             SaveButton = new RelayCommand(async () => await Task.Run(() => SaveSignal()));
@@ -229,6 +216,7 @@ namespace View.ViewModel
                 _dataHandlers.Add(dataHandler);
                 PopulateSignalsList();
                 DrawChart();
+                
             }
         }
 
@@ -252,7 +240,7 @@ namespace View.ViewModel
             {
                 MessageBox.Show($"Error has occured: {e.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-            
+
         }
 
         private void LoadStatistics()
@@ -272,7 +260,7 @@ namespace View.ViewModel
 
         private void PopulateSignalsList()
         {
-            
+
             _signals = new List<string>();
             foreach (var handler in _dataHandlers)
             {
@@ -284,7 +272,7 @@ namespace View.ViewModel
 
             if (_signals.Count > 0)
             {
-                AdditionalComboBoxSelected = _signals.Last();
+                MainComboBoxSelected = _signals.Last();
             }
 
         }
@@ -326,6 +314,7 @@ namespace View.ViewModel
                 dataHandler.Call();
                 _dataHandlers.Add(dataHandler);
                 DrawChart();
+                
 
             }
             catch (Exception e)
@@ -333,7 +322,7 @@ namespace View.ViewModel
                 MessageBox.Show($"Error has occured: {e.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             PopulateSignalsList();
-            
+
 
         }
 
@@ -380,70 +369,85 @@ namespace View.ViewModel
 
         }
 
+        private void DrawHistogram()
+        {
+
+            LabelsHistogram = null;
+            try
+            {
+                if (string.IsNullOrEmpty(MainComboBoxSelected))
+                {
+                    return;
+                }
+                var option = int.Parse(MainComboBoxSelected.Substring(0, 1));
+                
+                var HistData = _dataHandlers[option].ExtractHistogramData(NumberOfColumnsTB);
+                HistogramValues = new ChartValues<double>();
+                LabelsHistogram = new string[HistData.Count];
+                for (int i = 0; i < HistData.Count; i++)
+                {
+                    LabelsHistogram[i] = $"<{Math.Round(HistData[i][0], 2) }, {Math.Round(HistData[i][1], 2) }>";
+                    HistogramValues.Add(HistData[i][2]);
+                }
+                SeriesCollectionHistogram = new SeriesCollection
+                {
+
+                    new ColumnSeries()
+                    {
+                        Title = MainComboBoxSelected,
+                        Values = HistogramValues,
+                        ColumnPadding = 0.0
+                    }
+
+                };
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show($"Error has occured: {e.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
         private void DrawChart()
         {
             Labels = null;
             try
             {
+
                 SeriesCollection = new SeriesCollection();
-                switch (DrawModeRadioBTN)
+
+                foreach (var entry in _dataHandlers)
                 {
-                    case RadioButtonsEnum.LineSeries:
-                        foreach (var entry in _dataHandlers)
+                    ChartValues<ObservablePoint> lineValues = new ChartValues<ObservablePoint>();
+                    for (int i = 0; i < entry.X.Count; i++)
+                    {
+                        lineValues.Add(new ObservablePoint(entry.X[i], entry.Y[i]));
+                    }
+
+                    if (entry.IsScattered)
+                    {
+                        SeriesCollection.Add(new ScatterSeries()
                         {
-                            ChartValues<ObservablePoint> lineValues = new ChartValues<ObservablePoint>();
-                            for (int i = 0; i < entry.X.Count; i++)
-                            {
-                                lineValues.Add(new ObservablePoint(entry.X[i], entry.Y[i]));
-                            }
-
-                            if (entry.IsScattered)
-                            {
-                                SeriesCollection.Add(new ScatterSeries()
-                                {
-                                    PointGeometry = new EllipseGeometry(),
-                                    StrokeThickness = 8,
-                                    Title = $"{_dataHandlers.IndexOf(entry)}. {entry.Signal}",
-                                    Values = lineValues
-                                });
-                            }
-                            else
-                            {
-                                SeriesCollection.Add(new LineSeries()
-                                {
-                                    Fill = Brushes.Transparent,
-                                    Title = $"{_dataHandlers.IndexOf(entry)}. {entry.Signal}",
-                                    Values = lineValues,
-                                    PointGeometry = null
-                                });
-
-                            }
-                        }
-                        break;
-
-                    case RadioButtonsEnum.Histogram:
-                        var option = int.Parse(MainComboBoxSelected.Substring(0, 1));
-                        var HistData = _dataHandlers[option].ExtractHistogramData(NumberOfColumnsTB);
-                        HistogramValues = new ChartValues<double>();
-                        Labels = new string[HistData.Count];
-                        for (int i = 0; i < HistData.Count; i++)
+                            PointGeometry = new EllipseGeometry(),
+                            StrokeThickness = 8,
+                            Title = $"{_dataHandlers.IndexOf(entry)}. {entry.Signal}",
+                            Values = lineValues
+                        });
+                    }
+                    else
+                    {
+                        SeriesCollection.Add(new LineSeries()
                         {
-                            Labels[i] = $"<{Math.Round(HistData[i][0], 2) }, {Math.Round(HistData[i][1], 2) }>";
-                            HistogramValues.Add(HistData[i][2]);
-                        }
-                        SeriesCollection = new SeriesCollection
-                        {
+                            Fill = Brushes.Transparent,
+                            Title = $"{_dataHandlers.IndexOf(entry)}. {entry.Signal}",
+                            Values = lineValues,
+                            PointGeometry = null,
 
-                            new ColumnSeries()
-                            {
-                                Title = MainComboBoxSelected,
-                                Values = HistogramValues,
-                                ColumnPadding = 0.0
-                            }
+                        });
 
-                        };
-                        break;
+
+                    }
                 }
+
             }
             catch (Exception e)
             {
@@ -456,7 +460,7 @@ namespace View.ViewModel
             FillFactorTBVisibility = false;
             UnitEventTBVisibility = false;
             ProbabilityTBVisibility = false;
-            
+
             switch (value)
             {
                 case "Sinus":
