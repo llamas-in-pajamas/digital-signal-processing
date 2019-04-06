@@ -5,8 +5,22 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:View"
         xmlns:converters="clr-namespace:View.Converters"
+        xmlns:viewModel="clr-namespace:View.ViewModel"
         mc:Ignorable="d"
-        Title="Digital Signal Processing" Height="750" Width="1024">
+        Title="Digital Signal Processing" Height="750" Width="1024"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:dragablz="clr-namespace:Dragablz;assembly=Dragablz"
+        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+        TextElement.FontWeight="Regular"
+        TextElement.FontSize="13"
+        TextOptions.TextFormattingMode="Ideal"
+        TextOptions.TextRenderingMode="Auto"
+        Background="{DynamicResource MaterialDesignPaper}"
+        FontFamily="{DynamicResource MaterialDesignFont}"
+        WindowStartupLocation="CenterScreen">
+    <Window.DataContext>
+        <viewModel:MainWindowVM />
+    </Window.DataContext>
 
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
@@ -80,25 +94,13 @@
                     <Button Grid.Column="1" Command="{Binding LoadButton}" Content="Load" Margin="10 0 0 0"/>
 
                 </Grid>
-                <Grid Margin="0 10">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
-
-                    <RadioButton Grid.Column="0" Content="Line Series" GroupName="DrawOptions" IsChecked="{Binding Path=DrawModeRadioBTN, Mode=TwoWay, 
-                                 Converter={StaticResource enumConverter},
-                                 ConverterParameter=LineSeries}" />
-                    <RadioButton Grid.Column="1" Content="Histogram" GroupName="DrawOptions" IsChecked="{Binding Path=DrawModeRadioBTN, Mode=TwoWay, 
-                                 Converter={StaticResource enumConverter},
-                                 ConverterParameter=Histogram}" ToolTip="Specify Chart to display in Main Combobox" />
-                </Grid>
+                
                 <Grid Margin="0 10">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="2*" />
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
-                    <TextBlock Text="Enter number of columns: " TextAlignment="Right" Visibility="{Binding Path=ColumnsTBVisibility, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                    <TextBlock Text="Enter number of columns: " TextAlignment="Right"/>
                     <TextBox Grid.Column="1" Text="{Binding NumberOfColumnsTB, UpdateSourceTrigger=PropertyChanged}" Visibility="{Binding Path=ColumnsTBVisibility, Converter={StaticResource BooleanToVisibilityConverter}}" />
 
 
@@ -119,7 +121,7 @@
                     <TextBlock Text="Additional: " TextAlignment="Right" />
                     <ComboBox Grid.Column="1" ItemsSource="{Binding Path=AdditionalSignalsComboBox}" SelectedValue="{Binding Path=AdditionalComboBoxSelected}"  />
                 </Grid>
-                
+
                 <Grid Margin="0 5">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
@@ -131,64 +133,77 @@
                     <Button Grid.Column="2" Content="DO IT!" Margin="0 0 10 0" Command="{Binding DoOperationButton}" />
                 </Grid>
 
-                   <TextBlock Margin="0 15 0 0" TextWrapping="Wrap">
+                <TextBlock Margin="0 15 0 0" TextWrapping="Wrap">
                        <Run Text="Graph selected in main combobox will be used to display histogram and signal statistics values, removing and saving." />
                        <LineBreak />
                        <Run Text="If Discrete signal is selected Sampling frequency will be taken from chart period" FontWeight="Bold" />
-                   </TextBlock>
+                </TextBlock>
 
             </StackPanel>
 
             <!-- Charts -->
-            <StackPanel Grid.Column="1" Margin="10 0 0 0"
+            <materialDesign:ColorZone
+                Padding="9"
+                CornerRadius="5"
+                VerticalAlignment="Stretch"
+                materialDesign:ShadowAssist.ShadowDepth="Depth2"
+                Margin="5,10"
+                Grid.Column="1">
+                <StackPanel Grid.Column="1" Margin="10 0 0 0"
                 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
                 xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
                 xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf" 
                >
-                <Grid Height="550">
-                    <lvc:CartesianChart Series="{Binding SeriesCollection}" LegendLocation="Right" DisableAnimations="True" Hoverable="False" DataTooltip="{x:Null}" >
-                        <lvc:CartesianChart.AxisY>
-                            <lvc:Axis Title="f(x)" LabelFormatter="{Binding YFormatter}"></lvc:Axis>
-                        </lvc:CartesianChart.AxisY>
-                        <lvc:CartesianChart.AxisX>
-                            <lvc:Axis Title="t[s]" Labels="{Binding Labels}" LabelsRotation="125">
-                                <lvc:Axis.Separator>
-                                    <lvc:Separator IsEnabled="False" Step="1"></lvc:Separator>
-                                </lvc:Axis.Separator>
-                            </lvc:Axis>
-                        </lvc:CartesianChart.AxisX>
-                    </lvc:CartesianChart>
-                </Grid>
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
-                    <StackPanel Grid.Column="0">
-                        <TextBlock Text="Signal Average: " TextAlignment="Right" Margin="0 0 5 5"/>
-                        <TextBlock Text="Signal Variance: " TextAlignment="Right" Margin="0 0 5 5" />
-                        <TextBlock Text="AbsAvgSignal: " TextAlignment="Right" Margin="0 0 5 5" />
-                        
-                    </StackPanel>
-                    <StackPanel Grid.Column="1">
-                        <TextBox Padding="2" Text="{Binding SignalAverageTextBox}" IsReadOnly="True"  />
-                        <TextBox Padding="2" Text="{Binding SignalVarianceTextBox}" IsReadOnly="True"  />
-                        <TextBox Padding="2" Text="{Binding SignalAbsoluteAverageTextBox}" IsReadOnly="True"  />
-                    </StackPanel>
-                    <StackPanel Grid.Column="2">
-                        <TextBlock Text="AvgSignalPower: " TextAlignment="Right" Margin="0 0 5 5" />
-                        <TextBlock Text="RMSSignal: " TextAlignment="Right" Margin="0 0 5 5" />
-                    </StackPanel>
-                    <StackPanel Grid.Column="3">
-                        <TextBox Padding="2" Text="{Binding SignalAveragePowerTextBox}" IsReadOnly="True"  />
-                        <TextBox Padding="2" Text="{Binding SignalRMSTextBox}" IsReadOnly="True"  />
-                    </StackPanel>
-                </Grid>
-            </StackPanel>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="8*" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <dragablz:TabablzControl Margin="8">
+                            <dragablz:TabablzControl.InterTabController>
+                                <dragablz:InterTabController />
+                            </dragablz:TabablzControl.InterTabController>
+                            <TabItem Header="Line Chart" IsSelected="True">
+                                  <local:LineChart Height="500"/>
+                            </TabItem>
+                            <TabItem Header="Histogram">
+                                <local:Histogram Height="500" />
+                            </TabItem>
+                        </dragablz:TabablzControl>
+                        <Grid Grid.Row="1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="Signal Average: " TextAlignment="Right" Margin="0 0 5 5"/>
+                                <TextBlock Text="Signal Variance: " TextAlignment="Right" Margin="0 0 5 5" />
+                                <TextBlock Text="AbsAvgSignal: " TextAlignment="Right" Margin="0 0 5 5" />
+
+                            </StackPanel>
+                            <StackPanel Grid.Column="1">
+                                <TextBox Padding="2" Text="{Binding SignalAverageTextBox}" IsReadOnly="True"  />
+                                <TextBox Padding="2" Text="{Binding SignalVarianceTextBox}" IsReadOnly="True"  />
+                                <TextBox Padding="2" Text="{Binding SignalAbsoluteAverageTextBox}" IsReadOnly="True"  />
+                            </StackPanel>
+                            <StackPanel Grid.Column="2">
+                                <TextBlock Text="AvgSignalPower: " TextAlignment="Right" Margin="0 0 5 5" />
+                                <TextBlock Text="RMSSignal: " TextAlignment="Right" Margin="0 0 5 5" />
+                            </StackPanel>
+                            <StackPanel Grid.Column="3">
+                                <TextBox Padding="2" Text="{Binding SignalAveragePowerTextBox}" IsReadOnly="True"  />
+                                <TextBox Padding="2" Text="{Binding SignalRMSTextBox}" IsReadOnly="True"  />
+                            </StackPanel>
+                        </Grid>
+                    </Grid>
+                    
+
+                </StackPanel>
+            </materialDesign:ColorZone>
         </Grid>
     </Border>
 </Window>

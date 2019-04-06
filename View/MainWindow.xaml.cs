@@ -15,7 +15,7 @@ namespace View
         public MainWindow()
         {
             InitializeComponent();
-            DataContext = new MainWindowVM();
+            //DataContext = new MainWindowVM();
         }
     }
 }
