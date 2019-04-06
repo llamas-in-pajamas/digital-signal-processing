@@ -51,6 +51,18 @@ namespace SignalUtils
             return list;
         }
 
+        public static List<int> Quantize(List<double> values, int numberOfLevels)
+        {
+            List<double> copy = new List<double>(values);
+            List<int> quantizedSignal = new List<int>(values.Count);
+            double maximumValue = copy.Max();
+            foreach(double value in copy)
+            {
+                quantizedSignal.Add((int)Math.Floor((value / maximumValue) * numberOfLevels));
+            }
+            return quantizedSignal;
+        }
+
         public static List<double> Divide(List<double> list1, List<double> list2)
         {
             ListValidator(list1, list2);
