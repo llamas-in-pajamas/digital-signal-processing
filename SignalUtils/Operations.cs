@@ -14,16 +14,18 @@ namespace SignalUtils
             }
         }
 
-        public static List<double> Reconstruct(List<double> quantizedSignal, int numberOfSamples, double samplingFrequency)
+        public static List<double> Reconstruct(List<double> args, List<double> quantizedSignal, int numberOfSamples, double samplingFrequency)
         {
             List<double> reconstructedSignal = new List<double>();
             double period = 1.0 / samplingFrequency;
-            for(int i = 0, j = quantizedSignal.Count; i < j; j++)
+            
+            for(int i = 0, j = args.Count; i < j; i++)
             {
                 double sum = 0;
                 for (int n = 0; n < numberOfSamples; n++)
                 {
-                    sum += quantizedSignal[(int)(n * period)] * SinusCardinalis(i / period - n);
+                    var temp = SinusCardinalis(i / period - n);
+                    sum += quantizedSignal[(int)(n * period)] * SinusCardinalis(args[i] / period - n);
                 }
                 reconstructedSignal.Add(sum);
             }
@@ -91,17 +93,17 @@ namespace SignalUtils
             return signal;
         }
 
-        public static List<int> Quantize(List<double> values, int numberOfLevels)
+        public static List<double> Quantize(List<double> values, int numberOfLevels)
         {
             List<double> copy = new List<double>(values);
-            List<int> quantizedSignal = new List<int>(values.Count);
+            List<double> quantizedSignal = new List<double>(values.Count);
             double maximumValue = copy.Max();
             foreach(double value in copy)
             {
                 double temp = value / maximumValue;
                 double quntizedValue = Math.Ceiling(temp * numberOfLevels);
-                if (temp.Equals(0.5) && temp % 2 != 0) temp++;
-                quantizedSignal.Add((int)temp);
+                if (temp.Equals(0.5) && quntizedValue % 2 != 0) quntizedValue++;
+                quantizedSignal.Add((int)quntizedValue);
             }
             return quantizedSignal;
         }

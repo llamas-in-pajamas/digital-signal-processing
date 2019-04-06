@@ -13,6 +13,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using View.Helper;
 using View.ViewModel.Base;
+using SignalUtils;
 
 namespace View.ViewModel
 {
@@ -328,44 +329,45 @@ namespace View.ViewModel
 
         private void Operations()
         {
-            List<double> result = new List<double>();
-            var first = int.Parse(MainComboBoxSelected.Substring(0, 1));
-            var second = int.Parse(AdditionalComboBoxSelected.Substring(0, 1));
-            bool isScattered = _dataHandlers[first].IsScattered;
-            try
-            {
-                switch (OperationComboBoxSelected)
-                {
+            //List<double> result = new List<double>();
+            //var first = int.Parse(MainComboBoxSelected.Substring(0, 1));
+            //var second = int.Parse(AdditionalComboBoxSelected.Substring(0, 1));
+            //bool isScattered = _dataHandlers[first].IsScattered;
+            //try
+            //{
+            //    switch (OperationComboBoxSelected)
+            //    {
 
-                    case "Add":
-                        result = SignalUtils.Operations.Add(_dataHandlers[first].Y, _dataHandlers[second].Y);
-                        break;
-                    case "Subtract":
-                        result = SignalUtils.Operations.Subtract(_dataHandlers[first].Y, _dataHandlers[second].Y);
-                        break;
-                    case "Multiply":
-                        result = SignalUtils.Operations.Multiply(_dataHandlers[first].Y, _dataHandlers[second].Y);
-                        break;
-                    case "Divide":
-                        result = SignalUtils.Operations.Divide(_dataHandlers[first].Y, _dataHandlers[second].Y);
-                        break;
-                }
-                _dataHandlers.Add(new DataHandler()
-                {
-                    Signal = "result",
-                    X = _dataHandlers[0].X,
-                    Y = result,
-                    IsScattered = isScattered
-                });
-                DrawChart();
+            //        case "Add":
+            //            result = SignalUtils.Operations.Add(_dataHandlers[first].Y, _dataHandlers[second].Y);
+            //            break;
+            //        case "Subtract":
+            //            result = SignalUtils.Operations.Subtract(_dataHandlers[first].Y, _dataHandlers[second].Y);
+            //            break;
+            //        case "Multiply":
+            //            result = SignalUtils.Operations.Multiply(_dataHandlers[first].Y, _dataHandlers[second].Y);
+            //            break;
+            //        case "Divide":
+            //            result = SignalUtils.Operations.Divide(_dataHandlers[first].Y, _dataHandlers[second].Y);
+            //            break;
+            //    }
+            //    _dataHandlers.Add(new DataHandler()
+            //    {
+            //        Signal = "result",
+            //        X = _dataHandlers[0].X,
+            //        Y = result,
+            //        IsScattered = isScattered
+            //    });
+            //    DrawChart();
 
-            }
-            catch (Exception e)
-            {
-                MessageBox.Show($"Error has occured: {e.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+            //}
+            //catch (Exception e)
+            //{
+            //    MessageBox.Show($"Error has occured: {e.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            //}
 
-            PopulateSignalsList();
+            //PopulateSignalsList();
+            Zad2();
 
         }
 
@@ -497,5 +499,36 @@ namespace View.ViewModel
         }
 
         #endregion
+
+        void Zad2()
+        {
+            var temp = SignalUtils.Operations.Sample(_dataHandlers[0].X, _dataHandlers[0].Y, SamplingFrequencyTextBox);
+            List<double> args = new List<double>();
+            List<double> vals = new List<double>();
+
+            foreach(List<double> element in temp)
+            {
+                args.Add(element[0]);
+                vals.Add(element[1]);
+            }
+
+            List<double> quantizedValues = SignalUtils.Operations.Quantize(vals, 255);
+
+            double mse = SignalUtils.Statistics.MeanSquaredError(vals, quantizedValues);
+            double snr = SignalUtils.Statistics.SignalToNoiseRatio(vals, quantizedValues);
+            double md = SignalUtils.Statistics.MaximumDifference(vals, quantizedValues);
+            double psnr = SignalUtils.Statistics.PeakSignalToNoiseRatio(vals, quantizedValues);
+
+            List<double> reconstructedSignal = SignalUtils.Operations.Reconstruct(args, quantizedValues, 20, SamplingFrequencyTextBox);
+
+            _dataHandlers.Add(new DataHandler()
+            {
+                X = args,
+                Y = reconstructedSignal
+            });
+            MessageBox.Show(mse + " " + snr + " " + md + " " + psnr);
+            PopulateSignalsList();
+            DrawChart();
+        }
     }
 }
