@@ -58,7 +58,10 @@ namespace SignalUtils
             double maximumValue = copy.Max();
             foreach(double value in copy)
             {
-                quantizedSignal.Add((int)Math.Floor((value / maximumValue) * numberOfLevels));
+                double temp = value / maximumValue;
+                double quntizedValue = Math.Ceiling(temp * numberOfLevels);
+                if (temp.Equals(0.5) && temp % 2 != 0) temp++;
+                quantizedSignal.Add((int)temp);
             }
             return quantizedSignal;
         }
