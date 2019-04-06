@@ -103,5 +103,15 @@ namespace SignalUtils
 
             return list;
         }
+
+        private static double SinusCardinalis(double t)
+        {
+            if (t.Equals(0))
+            {
+                return 1;
+            }
+
+            return Math.Sin(Math.PI * t) / (Math.PI * t);
+        }
     }
 }
