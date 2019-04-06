@@ -8,12 +8,12 @@ namespace SignalUtils
     {
         public static bool IsScattered;
 
-        public static double MeanSquaredError(List<double> originalSignal, List<double> quanitizedSignal, double samplingFrequency)
+        public static double MeanSquaredError(List<double> originalSignal, List<double> quanitizedSignal)
         {
             int n = quanitizedSignal.Count;
             double fractional = 1.0 / n;
             double sum = 0;
-            // Spróbkować sygnał ???
+
             for(int i = 0; i < n; i++)
             {
                 sum += Math.Pow((originalSignal[i] - quanitizedSignal[i]), 2);
@@ -27,7 +27,6 @@ namespace SignalUtils
             double numerator = 0;
             double denominator = 0;
             int n = quantizedSignal.Count;
-            // Spróbkować oryginalny sygnał ???
             for(int i = 0; i < n; i++)
             {
                 numerator += Math.Pow(originalSignal[i], 2);
@@ -44,7 +43,6 @@ namespace SignalUtils
         public static double MaximumDifference(List<double> originalSignal, List<double> quantizedSignal)
         {
             int n = quantizedSignal.Count;
-            // Spróbkować oryginalny sygnał???
             List<double> differences = new List<double>(n);
 
             for(int i = 0; i < n; i++)
@@ -57,8 +55,7 @@ namespace SignalUtils
 
         public static double PeakSignalToNoiseRatio(List<double> originalSignal, List<double> quantizedSignal)
         {
-            // Spróbkować oryginalny sygnał????
-            double mse = MeanSquaredError(originalSignal, quantizedSignal, 0);
+            double mse = MeanSquaredError(originalSignal, quantizedSignal);
             int n = quantizedSignal.Count();
             double nominator = quantizedSignal.Max();
             double ratio = 10;
