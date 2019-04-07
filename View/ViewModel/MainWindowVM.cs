@@ -11,6 +11,7 @@ using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
+using MaterialDesignThemes.Wpf;
 using View.Helper;
 using View.ViewModel.Base;
 using SignalUtils;
@@ -31,6 +32,10 @@ namespace View.ViewModel
         private string _mainComboBoxSelected;
         private string _additionalComboBoxSelected;
         private string _operationComboBoxSelected;
+        private bool _isDarkTheme = true;
+        private const string RegistryKeyPath = @"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize";
+        private const string RegistryValueName = "AppsUseLightTheme";
+
 
         public ICommand GenerateButton { get; }
         public ICommand RemoveButton { get; }
@@ -197,7 +202,46 @@ namespace View.ViewModel
             PeriodTextBox = 1.0;
             DurationTextBox = 10.0;
 
+            ReadWindowsSetting();
+            ApplyBase(_isDarkTheme);
+
         }
+
+        #region ThemeSolvers
+
+        private void ReadWindowsSetting()
+        {
+            //            var uiSettings = SystemParameters.WindowGlassBrush;
+            //            var uiSettings1 = SystemParameters.WindowGlassColor;
+
+            using (RegistryKey key = Registry.CurrentUser.OpenSubKey(RegistryKeyPath))
+            {
+                object registryValueObject = key?.GetValue(RegistryValueName);
+                if (registryValueObject == null)
+                {
+                    _isDarkTheme = false;
+                }
+
+                int registryValue;
+                if (registryValueObject == null)
+                {
+                    registryValue = 0;
+                }
+                else
+                {
+                    registryValue = (int)registryValueObject;
+                }
+
+                _isDarkTheme = registryValue <= 0;
+            }
+        }
+
+        private void ApplyBase(bool isDark)
+        {
+            new PaletteHelper().SetLightDark(isDark);
+        }
+
+        #endregion
 
         #region methods
 

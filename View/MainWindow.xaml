@@ -8,6 +8,7 @@
         xmlns:viewModel="clr-namespace:View.ViewModel"
         mc:Ignorable="d"
         Title="Digital Signal Processing" Height="750" Width="1024"
+        MinHeight="600" MinWidth="900"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:dragablz="clr-namespace:Dragablz;assembly=Dragablz"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
@@ -48,7 +49,7 @@
                         </Style>
                     </dragablz:TabablzControl.ItemContainerStyle>
                     
-                    <TabItem TextElement.Foreground="{DynamicResource MaterialDesignBody}">
+                    <TabItem  TextElement.Foreground="{DynamicResource MaterialDesignBody}">
                         <TabItem.Header>
                             <TextBlock Text="Signal Generator" TextWrapping="Wrap"/>
                         </TabItem.Header>
