@@ -35,112 +35,7 @@
             </Grid.ColumnDefinitions>
 
             <!-- User controls -->
-            <StackPanel Grid.Column="0">
-
-                <TextBlock Text="Signal" />
-                <ComboBox ItemsSource="{Binding Path=SignalComboBox}" SelectedValue="{Binding Path=SignalComboBoxSelected}"  />
-
-                <TextBlock Text="Amplitude (A)" />
-                <TextBox Padding="2" Text="{Binding AmplitudeTextBox}"  />
-
-                <TextBlock Text="Period (T)" />
-                <TextBox Padding="2" Text="{Binding PeriodTextBox}" />
-
-                <TextBlock Text="Duration (d)" />
-                <TextBox Padding="2" Text="{Binding DurationTextBox}"/>
-
-                <TextBlock Text="Start Time (t)" />
-                <TextBox Padding="2" Text="{Binding StartTimeTextBox}" />
-
-                <TextBlock Text="Fill Factor" Visibility="{Binding Path=FillFactorTBVisibility, Converter={StaticResource BooleanToVisibilityConverter}}" />
-                <TextBox Padding="2" Text="{Binding FillFactorTextBox}" Visibility="{Binding Path=FillFactorTBVisibility, Converter={StaticResource BooleanToVisibilityConverter}}" />
-
-                <TextBlock Text="Unit Event Time" Visibility="{Binding Path=UnitEventTBVisibility, Converter={StaticResource BooleanToVisibilityConverter}}" />
-                <TextBox Padding="2" Text="{Binding UnitEventTextBox}" Visibility="{Binding Path=UnitEventTBVisibility, Converter={StaticResource BooleanToVisibilityConverter}}" />
-
-                <TextBlock Text="Probability - value between 0.0 and 1.0" Visibility="{Binding Path=ProbabilityTBVisibility, Converter={StaticResource BooleanToVisibilityConverter}}" />
-                <TextBox Padding="2" Text="{Binding ProbabilityTextBox}" Visibility="{Binding Path=ProbabilityTBVisibility, Converter={StaticResource BooleanToVisibilityConverter}}" />
-
-                <!-- Buttons -->
-                <Grid Margin="0 10">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-
-                    <Button Grid.Column="0" Content="Add" Command="{Binding GenerateButton}" />
-                    <Button Grid.Column="1" Content="Remove" Margin="10 0 0 0" Command="{Binding RemoveButton}" ToolTip="Specify Chart to remove in Main Combobox" />
-
-                </Grid>
-
-                <Grid Margin="0 10">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Text="Sampling Frequency: " TextAlignment="Right" />
-                    <TextBox Grid.Column="1" Text="{Binding SamplingFrequencyTextBox}" />
-                </Grid>
-
-
-
-                <Grid Margin="0 10">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-
-                    <Button Grid.Column="0" Command="{Binding SaveButton}" Content="Save"/>
-                    <Button Grid.Column="1" Command="{Binding LoadButton}" Content="Load" Margin="10 0 0 0"/>
-
-                </Grid>
-
-                <Grid Margin="0 10">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="2*" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Text="Enter number of columns: " TextAlignment="Right"/>
-                    <TextBox Grid.Column="1" Text="{Binding NumberOfColumnsTB, UpdateSourceTrigger=PropertyChanged}" Visibility="{Binding Path=ColumnsTBVisibility, Converter={StaticResource BooleanToVisibilityConverter}}" />
-
-
-                </Grid>
-                <Grid Margin="0 5">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="2*" />
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Text="Main: " TextAlignment="Right" />
-                    <ComboBox Grid.Column="1" ItemsSource="{Binding Path=SignalsComboBox}" SelectedValue="{Binding Path=MainComboBoxSelected}"  />
-                </Grid>
-                <Grid Margin="0 5">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="2*" />
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Text="Additional: " TextAlignment="Right" />
-                    <ComboBox Grid.Column="1" ItemsSource="{Binding Path=AdditionalSignalsComboBox}" SelectedValue="{Binding Path=AdditionalComboBoxSelected}"  />
-                </Grid>
-
-                <Grid Margin="0 5">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="2*" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Text="Operation: " TextAlignment="Right" />
-                    <ComboBox Grid.Column="1" ItemsSource="{Binding Path=OperationsComboBox}" SelectedValue="{Binding Path=OperationComboBoxSelected}"  />
-                    <Button Grid.Column="2" Content="DO IT!" Margin="0 0 10 0" Command="{Binding DoOperationButton}" />
-                </Grid>
-
-                <TextBlock Margin="0 15 0 0" TextWrapping="Wrap">
-                       <Run Text="Graph selected in main combobox will be used to display histogram and signal statistics values, removing and saving." />
-                       <LineBreak />
-                       <Run Text="If Discrete signal is selected Sampling frequency will be taken from chart period" FontWeight="Bold" />
-                </TextBlock>
-
-            </StackPanel>
-
+           <local:SignalGenerator />
             <!-- Charts -->
             <materialDesign:ColorZone
                 Padding="9"
@@ -188,7 +83,7 @@
                             <TextBox Grid.Column="1" Grid.Row="2" Text="{Binding SignalAbsoluteAverageTextBox}" IsReadOnly="True"  />
 
 
-                            <TextBlock Grid.Row="0" Grid.Column="2" VerticalAlignment="Bottom" Text="AvgSignalPower: " TextAlignment="Right" Margin="0 0 5 5" />
+                            <TextBlock Grid.Column="2" VerticalAlignment="Bottom" Text="AvgSignalPower: " TextAlignment="Right" Margin="0 0 5 5" />
                             <TextBlock  Grid.Column="2" Grid.Row="1" VerticalAlignment="Bottom" Text="RMSSignal: " TextAlignment="Right" Margin="0 0 5 5" />
 
 
