@@ -82,7 +82,7 @@ namespace SignalUtils
                 {
                     if (i >= args[j - 1] && i < args[j])
                     {
-                        temp.Add(args[j]);
+                        temp.Add(args[j-1]);
                         temp.Add(values[j - 1]);
                         break;
                     }
@@ -101,7 +101,7 @@ namespace SignalUtils
             foreach(double value in copy)
             {
                 double temp = value / maximumValue;
-                double quntizedValue = Math.Ceiling(temp * numberOfLevels);
+                double quntizedValue = Math.Ceiling(temp * ((double)numberOfLevels/2));
                 if (temp.Equals(0.5) && quntizedValue % 2 != 0) quntizedValue++;
                 quantizedSignal.Add((int)quntizedValue);
             }

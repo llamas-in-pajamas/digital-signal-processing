@@ -563,7 +563,7 @@ namespace View.ViewModel
             double md = SignalUtils.Statistics.MaximumDifference(vals, quantizedValues);
             double psnr = SignalUtils.Statistics.PeakSignalToNoiseRatio(vals, quantizedValues);
 
-            List<double> reconstructedSignal = SignalUtils.Operations.Reconstruct(args, quantizedValues, 20, SamplingFrequencyTextBox);
+            List<double> reconstructedSignal = SignalUtils.Operations.Reconstruct(args, quantizedValues, 50, SamplingFrequencyTextBox);
 
             _dataHandlers.Add(new DataHandler()
             {
