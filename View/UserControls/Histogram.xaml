@@ -13,7 +13,7 @@
                 <wpf:Axis Title="f(x)" LabelFormatter="{Binding YFormatter}"></wpf:Axis>
             </wpf:CartesianChart.AxisY>
             <wpf:CartesianChart.AxisX>
-                <wpf:Axis Title="t[s]" Labels="{Binding LabelsHistogram}" LabelsRotation="125">
+                <wpf:Axis Title="t[s]" Labels="{Binding LabelsHistogram}"  LabelsRotation="125">
                     <wpf:Axis.Separator>
                         <wpf:Separator IsEnabled="False" Step="1"></wpf:Separator>
                     </wpf:Axis.Separator>
