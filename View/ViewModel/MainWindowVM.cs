@@ -558,10 +558,12 @@ namespace View.ViewModel
 
             List<double> quantizedValues = SignalUtils.Operations.Quantize(vals, 255);
 
-            double mse = SignalUtils.Statistics.MeanSquaredError(vals, quantizedValues);
-            double snr = SignalUtils.Statistics.SignalToNoiseRatio(vals, quantizedValues);
-            double md = SignalUtils.Statistics.MaximumDifference(vals, quantizedValues);
-            double psnr = SignalUtils.Statistics.PeakSignalToNoiseRatio(vals, quantizedValues);
+            SignalUtils.QuantizedStatictics stats = new SignalUtils.QuantizedStatictics(vals, quantizedValues);
+            double mse = stats.MSE;
+            double snr = stats.SNR;
+            double md = stats.MD;
+            double psnr = stats.PSNR;
+            double enob = stats.ENOB;
 
             List<double> reconstructedSignal = SignalUtils.Operations.Reconstruct(args, quantizedValues, 50, SamplingFrequencyTextBox);
 
