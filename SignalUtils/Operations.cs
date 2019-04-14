@@ -18,8 +18,8 @@ namespace SignalUtils
         {
             List<double> reconstructedSignal = new List<double>();
             double period = 1.0 / samplingFrequency;
-            
-            for(int i = 0, j = args.Count; i < j; i++)
+
+            for (int i = 0, j = args.Count; i < j; i++)
             {
                 double sum = 0;
                 for (int n = 0; n < numberOfSamples; n++)
@@ -75,14 +75,14 @@ namespace SignalUtils
             double max = args.Max();
             List<List<double>> signal = new List<List<double>>();
 
-            for(double i = min; i <= max; i += period)
+            for (double i = min; i <= max; i += period)
             {
                 List<double> temp = new List<double>(2);
-                for(int j = 1; j < args.Count; j++)
+                for (int j = 1; j < args.Count; j++)
                 {
                     if (i >= args[j - 1] && i < args[j])
                     {
-                        temp.Add(args[j-1]);
+                        temp.Add(args[j - 1]);
                         temp.Add(values[j - 1]);
                         break;
                     }
@@ -95,17 +95,9 @@ namespace SignalUtils
 
         public static List<double> Quantize(List<double> values, int numberOfLevels)
         {
-            List<double> copy = new List<double>(values);
-            List<double> quantizedSignal = new List<double>(values.Count);
-            double maximumValue = copy.Max();
-            foreach(double value in copy)
-            {
-                double temp = value / maximumValue;
-                double quntizedValue = Math.Ceiling(temp * ((double)numberOfLevels/2));
-                if (temp.Equals(0.5) && quntizedValue % 2 != 0) quntizedValue++;
-                quantizedSignal.Add((int)quntizedValue);
-            }
-            return quantizedSignal;
+            double max = values.Max();
+            double min = values.Min();
+            return values.Select(n => Math.Round((n - min) / (max - min) * numberOfLevels) / numberOfLevels * (max - min) + min).ToList();
         }
 
         public static List<double> Divide(List<double> list1, List<double> list2)

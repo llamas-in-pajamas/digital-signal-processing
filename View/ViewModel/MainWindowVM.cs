@@ -353,7 +353,8 @@ namespace View.ViewModel
                     SignalComboBoxSelected,
                     FillFactorTextBox,
                     UnitEventTextBox,
-                    ProbabilityTextBox
+                    ProbabilityTextBox,
+                    SamplingFrequencyTextBox
 
                 );
                 dataHandler.Call();
@@ -463,12 +464,22 @@ namespace View.ViewModel
 
                 foreach (var entry in _dataHandlers)
                 {
+                    List<double> quants = SignalUtils.Operations.Quantize(entry.SamplesY,4);
                     ChartValues<ObservablePoint> lineValues = new ChartValues<ObservablePoint>();
                     for (int i = 0; i < entry.X.Count; i++)
                     {
                         lineValues.Add(new ObservablePoint(entry.X[i], entry.Y[i]));
                     }
-
+                    ChartValues<ObservablePoint> sampleValues = new ChartValues<ObservablePoint>();
+                    for (int i = 0; i < entry.SamplesX.Count; i++)
+                    {
+                        sampleValues.Add(new ObservablePoint(entry.SamplesX[i], entry.SamplesY[i]));
+                    }
+                    ChartValues<ObservablePoint> quantsValues = new ChartValues<ObservablePoint>();
+                    for (int i = 0; i < entry.SamplesX.Count; i++)
+                    {
+                        quantsValues.Add(new ObservablePoint(entry.SamplesX[i], quants[i]));
+                    }
                     if (entry.IsScattered)
                     {
                         SeriesCollection.Add(new ScatterSeries()
@@ -492,6 +503,22 @@ namespace View.ViewModel
 
 
                     }
+                    SeriesCollection.Add(new ScatterSeries()
+                    {
+                        PointGeometry = new EllipseGeometry(),
+                        StrokeThickness = 8,
+                        Title = $"Próbkowane kurwa",
+                        Values = sampleValues
+                    });
+                    SeriesCollection.Add(new LineSeries()
+                    {
+                        Fill = Brushes.Transparent,
+                        Title = $"A tu kwantowanie kurwa",
+                        Values = quantsValues,
+                        PointGeometry = null,
+                        LineSmoothness = 0
+
+                    });
                 }
 
             }
