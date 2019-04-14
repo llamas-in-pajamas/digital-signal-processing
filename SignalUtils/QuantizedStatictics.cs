@@ -9,31 +9,11 @@ namespace SignalUtils
         public List<double> Original;
         public List<double> Quantized;
 
-        public double MSE
-        {
-            get;
-            set;
-        }
-        public double SNR
-        {
-            get;
-            set;
-        }
-        public double MD
-        {
-            get;
-            set;
-        }
-        public double PSNR
-        {
-            get;
-            set;
-        }
-        public double ENOB
-        {
-            get;
-            set;
-        }
+        public double MSE { get; set; }
+        public double SNR { get; set; }
+        public double MD { get; set; }
+        public double PSNR { get; set; }
+        public double ENOB { get; set; }
 
         public QuantizedStatictics(List<double> originalValues, List<double> quantizedValues)
         {
