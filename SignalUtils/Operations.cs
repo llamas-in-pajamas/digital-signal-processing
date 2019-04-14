@@ -14,24 +14,91 @@ namespace SignalUtils
             }
         }
 
-        public static List<double> Reconstruct(List<double> args, List<double> quantizedSignal, int numberOfSamples, double samplingFrequency)
+        public static List<double> ReconstructCard(List<double> args, List<double> sampledSignal, int numberOfSamples, double samplingFrequency, double startTime, double endTime)
         {
             List<double> reconstructedSignal = new List<double>();
             double period = 1.0 / samplingFrequency;
+            var samplePeriod = (endTime - startTime) / 5000;
 
-            for (int i = 0, j = args.Count; i < j; i++)
+            for (double i = startTime; i <= endTime; i+=samplePeriod)
             {
                 double sum = 0;
-                for (int n = 0; n < numberOfSamples; n++)
+                var between = FindBetween(i, args);
+                if (between.Item1 == between.Item2)
                 {
-                    var temp = SinusCardinalis(i / period - n);
-                    sum += quantizedSignal[(int)(n * period)] * SinusCardinalis(args[i] / period - n);
+                    reconstructedSignal.Add(sampledSignal[between.Item1]);
+                    continue;
+                }
+
+                int start = between.Item1 - numberOfSamples;
+                int end = between.Item2 + numberOfSamples;
+                if (start < 0)
+                    start = 0;
+                if (end > sampledSignal.Count - 1)
+                    end = sampledSignal.Count - 1;
+                for (int j = start; j <=end; j++)
+                {
+                    
+                    //var temp = SinusCardinalis(i / period - between.Item1 + j);
+                    sum += sampledSignal[j] * SinusCardinalis(i / period - j);
+
                 }
                 reconstructedSignal.Add(sum);
             }
+            
             return reconstructedSignal;
-
         }
+
+        public static List<double> ReconstructFirstOrder(List<double> args, List<double> sampledSignal, double samplingFrequency, double startTime, double endTime)
+        {
+            List<double> reconstructedSignal = new List<double>();
+            double period = 1.0 / samplingFrequency;
+            var samplePeriod = (endTime - startTime) / 5000;
+
+            for (double i = startTime; i <= endTime; i += samplePeriod)
+            {
+                double sum = 0;
+                var between = FindBetween(i, args);
+                if (between.Item1 == between.Item2)
+                {
+                    reconstructedSignal.Add(sampledSignal[between.Item1]);
+                    continue;
+                }
+               
+                
+                for (int j = 0; j < sampledSignal.Count; j++)
+                {
+
+                    //var temp = SinusCardinalis(i / period - between.Item1 + j);
+                    sum += sampledSignal[j] * Math.Max(1- Math.Abs((i - j*period)/period), 0);
+
+                }
+                reconstructedSignal.Add(sum);
+            }
+
+            return reconstructedSignal;
+        }
+
+        
+
+        private static (int, int) FindBetween(double arg, List<double> args)
+        {
+            for (int i = 1; i < args.Count; i++)
+            {
+                if (arg==args[i])
+                {
+                    return (i, i);
+                }
+
+                if (arg > args[i - 1] && arg < args[i])
+                {
+                    return (i - 1, i);
+                }
+            }
+
+            return (0, 0);
+        }
+
         public static List<double> Add(List<double> list1, List<double> list2)
         {
             ListValidator(list1, list2);
@@ -87,6 +154,7 @@ namespace SignalUtils
                         break;
                     }
                 }
+
                 signal.Add(temp);
             }
 

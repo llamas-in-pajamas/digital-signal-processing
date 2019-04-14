@@ -464,22 +464,47 @@ namespace View.ViewModel
 
                 foreach (var entry in _dataHandlers)
                 {
-                    List<double> quants = SignalUtils.Operations.Quantize(entry.SamplesY,4);
+                    
                     ChartValues<ObservablePoint> lineValues = new ChartValues<ObservablePoint>();
                     for (int i = 0; i < entry.X.Count; i++)
                     {
                         lineValues.Add(new ObservablePoint(entry.X[i], entry.Y[i]));
                     }
-                    ChartValues<ObservablePoint> sampleValues = new ChartValues<ObservablePoint>();
-                    for (int i = 0; i < entry.SamplesX.Count; i++)
+
+                    if (entry.SamplesX!=null && entry.SamplesX.Count>0)
                     {
-                        sampleValues.Add(new ObservablePoint(entry.SamplesX[i], entry.SamplesY[i]));
+                        List<double> quants = SignalUtils.Operations.Quantize(entry.SamplesY, 4);
+                        ChartValues<ObservablePoint> sampleValues = new ChartValues<ObservablePoint>();
+                        for (int i = 0; i < entry.SamplesX.Count; i++)
+                        {
+                            sampleValues.Add(new ObservablePoint(entry.SamplesX[i], entry.SamplesY[i]));
+                        }
+                        SeriesCollection.Add(new ScatterSeries()
+                        {
+                            PointGeometry = new EllipseGeometry(),
+                            StrokeThickness = 8,
+                            Title = $"Próbkowane kurwa",
+                            Values = sampleValues
+                        });
+                        ChartValues<ObservablePoint> quantsValues = new ChartValues<ObservablePoint>();
+                        for (int i = 0; i < entry.SamplesX.Count; i++)
+                        {
+                            quantsValues.Add(new ObservablePoint(entry.SamplesX[i], quants[i]));
+                        }
+                        SeriesCollection.Add(new LineSeries()
+                        {
+                            Fill = Brushes.Transparent,
+                            Title = $"A tu kwantowanie kurwa",
+                            Values = quantsValues,
+                            PointGeometry = null,
+                            LineSmoothness = 0
+
+                        });
                     }
-                    ChartValues<ObservablePoint> quantsValues = new ChartValues<ObservablePoint>();
-                    for (int i = 0; i < entry.SamplesX.Count; i++)
-                    {
-                        quantsValues.Add(new ObservablePoint(entry.SamplesX[i], quants[i]));
-                    }
+                  
+
+                    
+
                     if (entry.IsScattered)
                     {
                         SeriesCollection.Add(new ScatterSeries()
@@ -503,22 +528,8 @@ namespace View.ViewModel
 
 
                     }
-                    SeriesCollection.Add(new ScatterSeries()
-                    {
-                        PointGeometry = new EllipseGeometry(),
-                        StrokeThickness = 8,
-                        Title = $"Próbkowane kurwa",
-                        Values = sampleValues
-                    });
-                    SeriesCollection.Add(new LineSeries()
-                    {
-                        Fill = Brushes.Transparent,
-                        Title = $"A tu kwantowanie kurwa",
-                        Values = quantsValues,
-                        PointGeometry = null,
-                        LineSmoothness = 0
-
-                    });
+                   
+                    
                 }
 
             }
@@ -573,33 +584,27 @@ namespace View.ViewModel
 
         void Zad2()
         {
-            var temp = SignalUtils.Operations.Sample(_dataHandlers[0].X, _dataHandlers[0].Y, SamplingFrequencyTextBox);
-            List<double> args = new List<double>();
-            List<double> vals = new List<double>();
+            
 
-            foreach(List<double> element in temp)
-            {
-                args.Add(element[0]);
-                vals.Add(element[1]);
-            }
+            List<double> quants = SignalUtils.Operations.Quantize(_dataHandlers[0].SamplesY, 4);
 
-            List<double> quantizedValues = SignalUtils.Operations.Quantize(vals, 255);
+            //List<double> quantizedValues = SignalUtils.Operations.Quantize(vals, 255);
 
-            SignalUtils.QuantizedStatictics stats = new SignalUtils.QuantizedStatictics(vals, quantizedValues);
+           SignalUtils.QuantizedStatictics stats = new SignalUtils.QuantizedStatictics(_dataHandlers[0].SamplesY, quants);
             double mse = stats.MSE;
             double snr = stats.SNR;
             double md = stats.MD;
             double psnr = stats.PSNR;
             double enob = stats.ENOB;
 
-            List<double> reconstructedSignal = SignalUtils.Operations.Reconstruct(args, quantizedValues, 50, SamplingFrequencyTextBox);
+            List<double> reconstructedSignal = SignalUtils.Operations.ReconstructFirstOrder(_dataHandlers[0].SamplesX, _dataHandlers[0].SamplesY, SamplingFrequencyTextBox, StartTimeTextBox, StartTimeTextBox+DurationTextBox);
 
             _dataHandlers.Add(new DataHandler()
             {
-                X = args,
+                X = _dataHandlers[0].X,
                 Y = reconstructedSignal
             });
-            MessageBox.Show(mse + " " + snr + " " + md + " " + psnr);
+            //MessageBox.Show(mse + " " + snr + " " + md + " " + psnr);
             PopulateSignalsList();
             DrawChart();
         }
