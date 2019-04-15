@@ -359,18 +359,24 @@ namespace View.ViewModel
                 MessageBox.Show("All ComboBoxes have to contain value for this operation", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
-            var option = int.Parse(MainComboBoxSelected.Substring(0, 1));
+
+            int option = 0;
+            try
+            {
+                option = int.Parse(MainComboBoxSelected.Substring(0, 1));
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show($"Error has occured: {e.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+            
             DataHandler chart = _dataHandlers[option];
 
             List<double> quants = SignalUtils.Operations.Quantize(chart.SamplesY, QuantizationLevelsTextBox);
             var SampledValues = chart.SamplesY;
 
-            QuantizedStatictics stats = new QuantizedStatictics(chart.SamplesY, quants);
-            MseTextBox = stats.MSE;
-            SnrTextBox = stats.SNR;
-            MdTextBox = stats.MD;
-            PsnrTextBox = stats.PSNR;
-            EnobTextBox = stats.ENOB;
+            
 
             List<double> ValuesToReconstruct = new List<double>();
             if (ReconstructComboBoxSelected.Contains("From Samples"))
@@ -392,6 +398,13 @@ namespace View.ViewModel
             {
                 reconstructedSignal = SignalUtils.Operations.ReconstructFirstOrder(chart.SamplesX, ValuesToReconstruct, SamplingFrequencyTextBox, StartTimeTextBox, StartTimeTextBox + DurationTextBox);
             }
+
+            QuantizedStatictics stats = new QuantizedStatictics(chart.SamplesY, quants);
+            MseTextBox = stats.MSE;
+            SnrTextBox = stats.SNR;
+            MdTextBox = stats.MD;
+            PsnrTextBox = stats.PSNR;
+            EnobTextBox = stats.ENOB;
 
             if (DrawReconstructedIsChecked)
             {
