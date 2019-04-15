@@ -78,8 +78,15 @@
                      Visibility="{Binding Path=ProbabilityTBVisibility, Converter={StaticResource BooleanToVisibilityConverter}}" 
                      />
         </StackPanel>
-
-        <Grid Grid.Row="6">
+        <Grid Grid.Row="6" VerticalAlignment="Center">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="Sampling Frequency: " TextAlignment="Right" />
+            <TextBox Grid.Column="1" Text="{Binding SamplingFrequencyTextBox}" Margin="0 0 20 0" />
+        </Grid>
+        <Grid Grid.Row="7">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
@@ -96,14 +103,7 @@
                     />
         </Grid>
 
-        <Grid Grid.Row="7" VerticalAlignment="Center">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
-            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="Sampling Frequency: " TextAlignment="Right" />
-            <TextBox Grid.Column="1" Text="{Binding SamplingFrequencyTextBox}" Margin="0 0 20 0" />
-        </Grid>
+        
         <Grid  Grid.Row="8">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>

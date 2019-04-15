@@ -82,6 +82,9 @@
     <Compile Include="Converters\EnumMatchToBooleanConverter.cs" />
     <Compile Include="FileStream\FileStream.cs" />
     <Compile Include="Helper\RadioButtonsEnum.cs" />
+    <Compile Include="UserControls\SignalOperations.xaml.cs">
+      <DependentUpon>SignalOperations.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UserControls\Signal Generator.xaml.cs">
       <DependentUpon>Signal Generator.xaml</DependentUpon>
     </Compile>
@@ -94,6 +97,10 @@
     <Compile Include="ViewModel\Base\BaseVM.cs" />
     <Compile Include="ViewModel\Base\RelayCommand.cs" />
     <Compile Include="ViewModel\MainWindowVM.cs" />
+    <Page Include="UserControls\SignalOperations.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UserControls\Signal Generator.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

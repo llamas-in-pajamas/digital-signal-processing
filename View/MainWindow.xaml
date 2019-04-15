@@ -59,11 +59,11 @@
                         <TabItem.Header>
                             <TextBlock Text="Signal Operations" TextWrapping="Wrap"/>
                         </TabItem.Header>
-                        <TextBlock Text="lol"></TextBlock>
+                        <local:SignalOperations Margin="9 0 0 0" />
                     </TabItem>
                 </dragablz:TabablzControl>
             </materialDesign:ColorZone>
-            <!--<local:SignalGenerator Grid.Column="0" />-->
+            
             <!-- Charts -->
             <materialDesign:ColorZone
                 Padding="9"

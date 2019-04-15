@@ -1,6 +1,7 @@
 ﻿using LiveCharts;
 using LiveCharts.Defaults;
 using LiveCharts.Wpf;
+using MaterialDesignThemes.Wpf;
 using Microsoft.Win32;
 using SignalGenerators;
 using System;
@@ -11,10 +12,9 @@ using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
-using MaterialDesignThemes.Wpf;
+using SignalUtils;
 using View.Helper;
 using View.ViewModel.Base;
-using SignalUtils;
 
 namespace View.ViewModel
 {
@@ -33,6 +33,8 @@ namespace View.ViewModel
         private string _additionalComboBoxSelected;
         private string _operationComboBoxSelected;
         private bool _isDarkTheme = true;
+        private string _reconstructComboBoxSelected;
+        private string _reconstructionMethodComboBoxSelected;
         private const string RegistryKeyPath = @"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize";
         private const string RegistryValueName = "AppsUseLightTheme";
 
@@ -42,6 +44,8 @@ namespace View.ViewModel
         public ICommand DoOperationButton { get; }
         public ICommand SaveButton { get; }
         public ICommand LoadButton { get; }
+        public ICommand ReconstructButton { get; }
+        public ICommand RemoveLatestButton { get; }
 
 
         #region props
@@ -60,13 +64,14 @@ namespace View.ViewModel
             }
         }
 
-        public double SamplingFrequencyTextBox { get; set; }
+        public double SamplingFrequencyTextBox { get; set; } = 1000;
 
         public CollectionView SignalsComboBox { get; set; }
         public CollectionView AdditionalSignalsComboBox { get; set; }
 
         public CollectionView SignalComboBox { get; }
         public CollectionView OperationsComboBox { get; }
+
         //Chart Props
         public SeriesCollection SeriesCollection { get; set; } = new SeriesCollection();
         public SeriesCollection SeriesCollectionHistogram { get; set; } = new SeriesCollection();
@@ -138,13 +143,57 @@ namespace View.ViewModel
         public double UnitEventTextBox { get; set; }
 
         public double ProbabilityTextBox { get; set; }
-
+        #region Signal Stats
 
         public double SignalAverageTextBox { get; set; }
         public double SignalVarianceTextBox { get; set; }
         public double SignalAbsoluteAverageTextBox { get; set; }
         public double SignalAveragePowerTextBox { get; set; }
         public double SignalRMSTextBox { get; set; }
+        #endregion
+
+        #region SignalOperationProps
+
+        public int QuantizationLevelsTextBox { get; set; } = 4;
+        public int NumOfSamplesTextBox { get; set; } = 50;
+        public CollectionView ReconstructComboBox { get; set; }
+        public CollectionView ReconstructionMethodComboBox { get; set; }
+        public string ReconstructionMethodComboBoxSelected
+        {
+            get => _reconstructionMethodComboBoxSelected;
+            set
+            {
+                if (_reconstructionMethodComboBoxSelected == value) return;
+                _reconstructionMethodComboBoxSelected = value;
+                OnPropertyChanged(nameof(ReconstructionMethodComboBox));
+            }
+        }
+
+        public string ReconstructComboBoxSelected
+        {
+            get => _reconstructComboBoxSelected;
+            set
+            {
+                if (_reconstructComboBoxSelected == value) return;
+                _reconstructComboBoxSelected = value;
+                OnPropertyChanged(nameof(ReconstructComboBox));
+            }
+        }
+
+        public bool DrawSamplesIsChecked { get; set; } = true;
+        public bool DrawQuantaIsChecked { get; set; }
+        public bool DrawReconstructedIsChecked { get; set; }
+
+        //DATA
+        public double MseTextBox { get; set; }
+        public double SnrTextBox { get; set; }
+        public double MdTextBox { get; set; }
+        public double PsnrTextBox { get; set; }
+        public double EnobTextBox { get; set; }
+
+
+
+        #endregion
 
         #endregion
 
@@ -156,7 +205,7 @@ namespace View.ViewModel
         public bool UnitEventTBVisibility { get; set; }
 
         public bool ProbabilityTBVisibility { get; set; }
-        
+
 
         #endregion
 
@@ -199,11 +248,26 @@ namespace View.ViewModel
             LoadButton = new RelayCommand(LoadSignal);
 
             AmplitudeTextBox = 1.0;
-            PeriodTextBox = 1.0;
-            DurationTextBox = 10.0;
+            PeriodTextBox = 0.01;
+            DurationTextBox = 0.02;
 
             ReadWindowsSetting();
             ApplyBase(_isDarkTheme);
+
+            ReconstructComboBox = new CollectionView(new List<string>()
+            {
+                "From Samples",
+                "From Quanta"
+            });
+
+            ReconstructionMethodComboBox = new CollectionView(new List<string>()
+            {
+                "Sinus Cardinalis",
+                "First Order"
+            });
+
+            ReconstructButton = new RelayCommand(Reconstruct);
+            RemoveLatestButton = new RelayCommand(RemoveLatest);
 
         }
 
@@ -261,7 +325,7 @@ namespace View.ViewModel
                 _dataHandlers.Add(dataHandler);
                 PopulateSignalsList();
                 DrawChart();
-                
+
             }
         }
 
@@ -286,6 +350,107 @@ namespace View.ViewModel
                 MessageBox.Show($"Error has occured: {e.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
 
+        }
+
+        private void Reconstruct()
+        {
+            if (string.IsNullOrEmpty(ReconstructComboBoxSelected) || string.IsNullOrEmpty(ReconstructionMethodComboBoxSelected))
+            {
+                MessageBox.Show("All ComboBoxes have to contain value for this operation", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+            var option = int.Parse(MainComboBoxSelected.Substring(0, 1));
+            DataHandler chart = _dataHandlers[option];
+
+            List<double> quants = SignalUtils.Operations.Quantize(chart.SamplesY, QuantizationLevelsTextBox);
+            var SampledValues = chart.SamplesY;
+
+            QuantizedStatictics stats = new QuantizedStatictics(chart.SamplesY, quants);
+            MseTextBox = stats.MSE;
+            SnrTextBox = stats.SNR;
+            MdTextBox = stats.MD;
+            PsnrTextBox = stats.PSNR;
+            EnobTextBox = stats.ENOB;
+
+            List<double> ValuesToReconstruct = new List<double>();
+            if (ReconstructComboBoxSelected.Contains("From Samples"))
+            {
+                ValuesToReconstruct = SampledValues;
+            }
+            if (ReconstructComboBoxSelected.Contains("From Quanta"))
+            {
+                ValuesToReconstruct = quants;
+            }
+
+
+            List<double> reconstructedSignal = new List<double>();
+            if (ReconstructionMethodComboBoxSelected.Contains("Sinus Cardinalis"))
+            {
+                reconstructedSignal = SignalUtils.Operations.ReconstructCard(chart.SamplesX, ValuesToReconstruct, NumOfSamplesTextBox, SamplingFrequencyTextBox, StartTimeTextBox, StartTimeTextBox + DurationTextBox); ;
+            }
+            if (ReconstructionMethodComboBoxSelected.Contains("First Order"))
+            {
+                reconstructedSignal = SignalUtils.Operations.ReconstructFirstOrder(chart.SamplesX, ValuesToReconstruct, SamplingFrequencyTextBox, StartTimeTextBox, StartTimeTextBox + DurationTextBox);
+            }
+
+            if (DrawReconstructedIsChecked)
+            {
+                ChartValues<ObservablePoint> reconstructedValues = new ChartValues<ObservablePoint>();
+                for (int i = 0; i < chart.X.Count; i++)
+                {
+                    reconstructedValues.Add(new ObservablePoint(chart.X[i], reconstructedSignal[i]));
+                }
+                SeriesCollection.Add(new LineSeries()
+                {
+                    Fill = Brushes.Transparent,
+                    Title = "Reconstructed",
+                    Values = reconstructedValues,
+                    PointGeometry = null,
+                    LineSmoothness = 0
+
+                });
+            }
+
+
+            if (DrawQuantaIsChecked)
+            {
+                ChartValues<ObservablePoint> quantsValues = new ChartValues<ObservablePoint>();
+                for (int i = 0; i < chart.SamplesX.Count; i++)
+                {
+                    quantsValues.Add(new ObservablePoint(chart.SamplesX[i], quants[i]));
+                }
+                SeriesCollection.Add(new LineSeries()
+                {
+                    Fill = Brushes.Transparent,
+                    Title = "Quanta",
+                    Values = quantsValues,
+                    PointGeometry = null,
+                    LineSmoothness = 0
+
+                });
+            }
+
+            if (DrawSamplesIsChecked)
+            {
+                ChartValues<ObservablePoint> sampleValues = new ChartValues<ObservablePoint>();
+                for (int i = 0; i < chart.SamplesX.Count; i++)
+                {
+                    sampleValues.Add(new ObservablePoint(chart.SamplesX[i], chart.SamplesY[i]));
+                }
+                SeriesCollection.Add(new ScatterSeries()
+                {
+                    PointGeometry = new EllipseGeometry(),
+                    StrokeThickness = 8,
+                    Title = "Samples",
+                    Values = sampleValues
+                });
+            }
+
+        }
+
+        private void RemoveLatest()
+        {
+            SeriesCollection.RemoveAt(SeriesCollection.Count-1);
         }
 
         private void LoadStatistics()
@@ -360,7 +525,7 @@ namespace View.ViewModel
                 dataHandler.Call();
                 _dataHandlers.Add(dataHandler);
                 DrawChart();
-                
+
 
             }
             catch (Exception e)
@@ -374,45 +539,45 @@ namespace View.ViewModel
 
         private void Operations()
         {
-            //List<double> result = new List<double>();
-            //var first = int.Parse(MainComboBoxSelected.Substring(0, 1));
-            //var second = int.Parse(AdditionalComboBoxSelected.Substring(0, 1));
-            //bool isScattered = _dataHandlers[first].IsScattered;
-            //try
-            //{
-            //    switch (OperationComboBoxSelected)
-            //    {
+            List<double> result = new List<double>();
+            var first = int.Parse(MainComboBoxSelected.Substring(0, 1));
+            var second = int.Parse(AdditionalComboBoxSelected.Substring(0, 1));
+            bool isScattered = _dataHandlers[first].IsScattered;
+            try
+            {
+                switch (OperationComboBoxSelected)
+                {
 
-            //        case "Add":
-            //            result = SignalUtils.Operations.Add(_dataHandlers[first].Y, _dataHandlers[second].Y);
-            //            break;
-            //        case "Subtract":
-            //            result = SignalUtils.Operations.Subtract(_dataHandlers[first].Y, _dataHandlers[second].Y);
-            //            break;
-            //        case "Multiply":
-            //            result = SignalUtils.Operations.Multiply(_dataHandlers[first].Y, _dataHandlers[second].Y);
-            //            break;
-            //        case "Divide":
-            //            result = SignalUtils.Operations.Divide(_dataHandlers[first].Y, _dataHandlers[second].Y);
-            //            break;
-            //    }
-            //    _dataHandlers.Add(new DataHandler()
-            //    {
-            //        Signal = "result",
-            //        X = _dataHandlers[0].X,
-            //        Y = result,
-            //        IsScattered = isScattered
-            //    });
-            //    DrawChart();
+                    case "Add":
+                        result = SignalUtils.Operations.Add(_dataHandlers[first].Y, _dataHandlers[second].Y);
+                        break;
+                    case "Subtract":
+                        result = SignalUtils.Operations.Subtract(_dataHandlers[first].Y, _dataHandlers[second].Y);
+                        break;
+                    case "Multiply":
+                        result = SignalUtils.Operations.Multiply(_dataHandlers[first].Y, _dataHandlers[second].Y);
+                        break;
+                    case "Divide":
+                        result = SignalUtils.Operations.Divide(_dataHandlers[first].Y, _dataHandlers[second].Y);
+                        break;
+                }
+                _dataHandlers.Add(new DataHandler()
+                {
+                    Signal = "result",
+                    X = _dataHandlers[0].X,
+                    Y = result,
+                    IsScattered = isScattered
+                });
+                DrawChart();
 
-            //}
-            //catch (Exception e)
-            //{
-            //    MessageBox.Show($"Error has occured: {e.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            //}
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show($"Error has occured: {e.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
 
             //PopulateSignalsList();
-            Zad2();
+            //Zad2();
 
         }
 
@@ -427,7 +592,7 @@ namespace View.ViewModel
                     return;
                 }
                 var option = int.Parse(MainComboBoxSelected.Substring(0, 1));
-                
+
                 var HistData = _dataHandlers[option].ExtractHistogramData(NumberOfColumnsTB);
                 HistogramValues = new ChartValues<double>();
                 LabelsHistogram = new string[HistData.Count];
@@ -464,47 +629,13 @@ namespace View.ViewModel
 
                 foreach (var entry in _dataHandlers)
                 {
-                    
+
                     ChartValues<ObservablePoint> lineValues = new ChartValues<ObservablePoint>();
                     for (int i = 0; i < entry.X.Count; i++)
                     {
                         lineValues.Add(new ObservablePoint(entry.X[i], entry.Y[i]));
                     }
-
-                    if (entry.SamplesX!=null && entry.SamplesX.Count>0)
-                    {
-                        List<double> quants = SignalUtils.Operations.Quantize(entry.SamplesY, 4);
-                        ChartValues<ObservablePoint> sampleValues = new ChartValues<ObservablePoint>();
-                        for (int i = 0; i < entry.SamplesX.Count; i++)
-                        {
-                            sampleValues.Add(new ObservablePoint(entry.SamplesX[i], entry.SamplesY[i]));
-                        }
-                        SeriesCollection.Add(new ScatterSeries()
-                        {
-                            PointGeometry = new EllipseGeometry(),
-                            StrokeThickness = 8,
-                            Title = $"Próbkowane kurwa",
-                            Values = sampleValues
-                        });
-                        ChartValues<ObservablePoint> quantsValues = new ChartValues<ObservablePoint>();
-                        for (int i = 0; i < entry.SamplesX.Count; i++)
-                        {
-                            quantsValues.Add(new ObservablePoint(entry.SamplesX[i], quants[i]));
-                        }
-                        SeriesCollection.Add(new LineSeries()
-                        {
-                            Fill = Brushes.Transparent,
-                            Title = $"A tu kwantowanie kurwa",
-                            Values = quantsValues,
-                            PointGeometry = null,
-                            LineSmoothness = 0
-
-                        });
-                    }
-                  
-
                     
-
                     if (entry.IsScattered)
                     {
                         SeriesCollection.Add(new ScatterSeries()
@@ -528,8 +659,8 @@ namespace View.ViewModel
 
 
                     }
-                   
-                    
+
+
                 }
 
             }
@@ -582,31 +713,6 @@ namespace View.ViewModel
 
         #endregion
 
-        void Zad2()
-        {
-            
-
-            List<double> quants = SignalUtils.Operations.Quantize(_dataHandlers[0].SamplesY, 4);
-
-            //List<double> quantizedValues = SignalUtils.Operations.Quantize(vals, 255);
-
-           SignalUtils.QuantizedStatictics stats = new SignalUtils.QuantizedStatictics(_dataHandlers[0].SamplesY, quants);
-            double mse = stats.MSE;
-            double snr = stats.SNR;
-            double md = stats.MD;
-            double psnr = stats.PSNR;
-            double enob = stats.ENOB;
-
-            List<double> reconstructedSignal = SignalUtils.Operations.ReconstructFirstOrder(_dataHandlers[0].SamplesX, _dataHandlers[0].SamplesY, SamplingFrequencyTextBox, StartTimeTextBox, StartTimeTextBox+DurationTextBox);
-
-            _dataHandlers.Add(new DataHandler()
-            {
-                X = _dataHandlers[0].X,
-                Y = reconstructedSignal
-            });
-            //MessageBox.Show(mse + " " + snr + " " + md + " " + psnr);
-            PopulateSignalsList();
-            DrawChart();
-        }
+        
     }
 }
