@@ -7,7 +7,7 @@ namespace SignalUtils
     public class QuantizedStatictics
     {
         public List<double> Original;
-        public List<double> Quantized;
+        public List<double> Reconstructed;
 
         public double MSE { get; set; }
         public double SNR { get; set; }
@@ -15,10 +15,10 @@ namespace SignalUtils
         public double PSNR { get; set; }
         public double ENOB { get; set; }
 
-        public QuantizedStatictics(List<double> originalValues, List<double> quantizedValues)
+        public QuantizedStatictics(List<double> originalValues, List<double> reconstructedValues)
         {
             Original = new List<double>(originalValues);
-            Quantized = new List<double>(quantizedValues);
+            Reconstructed = new List<double>(reconstructedValues);
             Initialize();
         }
 
@@ -33,15 +33,15 @@ namespace SignalUtils
 
         private void MeanSquaredError()
         {
-            int n = Quantized.Count;
+            int n = Reconstructed.Count;
             double fractional = 1.0 / n;
             double sum = 0;
 
             for (int i = 0; i < n; i++)
             {
-                sum += Math.Pow((Original[i] - Quantized[i]), 2);
+                sum += Math.Pow((Original[i] - Reconstructed[i]), 2);
             }
-            MSE = sum;
+            MSE = sum * fractional;
         }
 
         private void SignalToNoiseRatio()
@@ -49,7 +49,7 @@ namespace SignalUtils
             double ratio = 10;
             double numerator = 0;
             double denominator = 0;
-            int n = Quantized.Count;
+            int n = Reconstructed.Count;
             for (int i = 0; i < n; i++)
             {
                 numerator += Math.Pow(Original[i], 2);
@@ -57,19 +57,19 @@ namespace SignalUtils
 
             for (int i = 0; i < n; i++)
             {
-                denominator += Math.Pow(Original[i] - Quantized[i], 2);
+                denominator += Math.Pow(Original[i] - Reconstructed[i], 2);
             }
             SNR = ratio * Math.Log10(numerator / denominator);
         }
 
         private void MaximumDifference()
         {
-            int n = Quantized.Count;
+            int n = Reconstructed.Count;
             List<double> differences = new List<double>(n);
 
             for (int i = 0; i < n; i++)
             {
-                differences.Add(Math.Abs(Original[i] - Quantized[i]));
+                differences.Add(Math.Abs(Original[i] - Reconstructed[i]));
             }
             MD = differences.Max();
         }
@@ -77,8 +77,7 @@ namespace SignalUtils
         private void PeakSignalToNoiseRatio()
         {
             double mse = MSE;
-            int n = Quantized.Count();
-            double nominator = Quantized.Max();
+            double nominator = Original.Max();
             double ratio = 10;
             PSNR = ratio * Math.Log10(nominator / mse);
         }

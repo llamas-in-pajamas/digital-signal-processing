@@ -399,12 +399,18 @@ namespace View.ViewModel
                 reconstructedSignal = SignalUtils.Operations.ReconstructFirstOrder(chart.SamplesX, ValuesToReconstruct, SamplingFrequencyTextBox, StartTimeTextBox, StartTimeTextBox + DurationTextBox);
             }
 
-            QuantizedStatictics stats = new QuantizedStatictics(chart.SamplesY, quants);
+            QuantizedStatictics stats = new QuantizedStatictics(chart.Y, reconstructedSignal);
             MseTextBox = stats.MSE;
             SnrTextBox = stats.SNR;
             MdTextBox = stats.MD;
             PsnrTextBox = stats.PSNR;
-            EnobTextBox = stats.ENOB;
+            EnobTextBox = 0;
+
+            if (ReconstructComboBoxSelected.Contains("From Quanta"))
+            {
+                EnobTextBox = stats.ENOB;
+            }
+            
 
             if (DrawReconstructedIsChecked)
             {
