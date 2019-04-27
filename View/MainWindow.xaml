@@ -40,12 +40,13 @@
                 Grid.Column="0"
                 >
 
-                <dragablz:TabablzControl TabStripPlacement="Left" >
+                <dragablz:TabablzControl TabStripPlacement="Left" FontSize="12" >
                     <dragablz:TabablzControl.ItemContainerStyle>
                         <Style BasedOn="{StaticResource MaterialDesignDragableTabItemStyle}" TargetType="{x:Type dragablz:DragablzItem}">
                             <Setter Property="Width" Value="0"/>
                             <Setter Property="Height" Value="50"/>
                             <Setter Property="HorizontalContentAlignment" Value="Left"/>
+                            <Setter Property="FontSize" Value="9"/>
                         </Style>
                     </dragablz:TabablzControl.ItemContainerStyle>
                     
@@ -60,6 +61,12 @@
                             <TextBlock Text="Signal Operations" TextWrapping="Wrap"/>
                         </TabItem.Header>
                         <local:SignalOperations Margin="9 0 0 0" />
+                    </TabItem>
+                    <TabItem TextElement.Foreground="{DynamicResource MaterialDesignBody}">
+                        <TabItem.Header>
+                            <TextBlock Text="Signal Convolution" TextWrapping="Wrap"/>
+                        </TabItem.Header>
+                        <local:SignalConvolution  Margin="9 0 0 0" />
                     </TabItem>
                 </dragablz:TabablzControl>
             </materialDesign:ColorZone>
