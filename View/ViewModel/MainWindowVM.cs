@@ -35,6 +35,7 @@ namespace View.ViewModel
         private bool _isDarkTheme = true;
         private string _reconstructComboBoxSelected;
         private string _reconstructionMethodComboBoxSelected;
+        private string _operationTypeComboBoxSelected;
         private const string RegistryKeyPath = @"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize";
         private const string RegistryValueName = "AppsUseLightTheme";
 
@@ -73,6 +74,9 @@ namespace View.ViewModel
         public CollectionView OperationsComboBox { get; }
 
         //Chart Props
+
+        #region chart props
+
         public SeriesCollection SeriesCollection { get; set; } = new SeriesCollection();
         public SeriesCollection SeriesCollectionHistogram { get; set; } = new SeriesCollection();
 
@@ -80,6 +84,9 @@ namespace View.ViewModel
         public string[] LabelsHistogram { get; set; }
 
         public Func<double, string> YFormatter { get; set; }
+
+        #endregion
+        
 
         public double FillFactorTextBox { get; set; }
 
@@ -195,6 +202,26 @@ namespace View.ViewModel
 
         #endregion
 
+        #region Advanced Operation Props
+        public ICommand DoItButton { get; }
+
+        public CollectionView OperationTypeComboBox { get; }
+
+        public string OperationTypeComboBoxSelected
+        {
+            get => _operationTypeComboBoxSelected;
+            set
+            {
+                if (_operationTypeComboBoxSelected == value) return;
+                _operationTypeComboBoxSelected = value;
+                OnPropertyChanged(nameof(OperationTypeComboBoxSelected));
+
+            }
+        }
+
+        #endregion
+
+
         #endregion
 
 
@@ -269,6 +296,18 @@ namespace View.ViewModel
             ReconstructButton = new RelayCommand(Reconstruct);
             RemoveLatestButton = new RelayCommand(RemoveLatest);
 
+            #region Advanced Operations
+
+            OperationTypeComboBox = new CollectionView(new List<string>()
+            {
+                "Convolution",
+                "Correlation"
+            });
+            DoItButton = new RelayCommand(DoOperation);
+
+            #endregion
+
+
         }
 
         #region ThemeSolvers
@@ -308,6 +347,84 @@ namespace View.ViewModel
         #endregion
 
         #region methods
+
+        #region Advanced Operations Methods
+
+        private void DoOperation()
+        {
+            if (string.IsNullOrEmpty(OperationTypeComboBoxSelected))
+            {
+                MessageBox.Show($"Please choose operation type", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            int sig1 = 0;
+            int sig2 = 0;
+            try
+            {
+                sig1 = int.Parse(MainComboBoxSelected.Substring(0, 1));
+                sig2 = int.Parse(AdditionalComboBoxSelected.Substring(0, 1));
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show($"Error has occured: {e.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            var signal1 = _dataHandlers[sig1];
+            var signal2 = _dataHandlers[sig2];
+            
+
+            List<double> result;
+            switch (OperationTypeComboBoxSelected)
+            {
+                case "Correlation":
+                    signal2.Y.Reverse();
+                    goto case "Convolution";
+                case "Convolution":
+                
+                    if (!signal1.IsScattered || !signal2.IsScattered)
+                    {
+                        MessageBox.Show($"Both signals have to be discrete", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        return;
+                    }
+                    result = SignalUtils.AdvancedOperations.DiscreteConvolution(signal1.Y,
+                        signal2.Y);
+
+                    //var temp = signal1.X.First() < signal2.X.First() ? signal1 : signal2;
+                    //TODO: How to generate Xs?????
+                    var xValues = ExtendXValues(signal1.X, result.Count);
+
+                    _dataHandlers.Add(new DataHandler()
+                    {
+                        Y = result,
+                        X = xValues,
+                        IsScattered = true,
+                        Signal = "result",
+                        StartTime = xValues.First(),
+                        EndTime = xValues.Last()
+                    });
+                    _dataHandlers.Last().GenerateStats();
+                    break;
+            }
+            PopulateSignalsList();
+            DrawChart();
+
+        }
+
+        private List<double> ExtendXValues(List<double> existing, int target)
+        {
+            double delta = existing[1] - existing[0];
+            List<double> temp = new List<double>(existing);
+            for (int i = existing.Count; i < target; i++)
+            {
+                temp.Add(temp[i-1] + delta);
+            }
+
+            return temp;
+        }
+
+        #endregion
 
         private void LoadSignal()
         {

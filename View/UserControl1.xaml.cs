@@ -16,11 +16,11 @@ using System.Windows.Shapes;
 namespace View
 {
     /// <summary>
-    /// Interaction logic for SignalConvolution.xaml
+    /// Interaction logic for DiscreteOperations.xaml
     /// </summary>
-    public partial class SignalConvolution : UserControl
+    public partial class UserControl1 : UserControl
     {
-        public SignalConvolution()
+        public UserControl1()
         {
             InitializeComponent();
         }

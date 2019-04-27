@@ -64,9 +64,9 @@
                     </TabItem>
                     <TabItem TextElement.Foreground="{DynamicResource MaterialDesignBody}">
                         <TabItem.Header>
-                            <TextBlock Text="Signal Convolution" TextWrapping="Wrap"/>
+                            <TextBlock Text="Discrete Operations" TextWrapping="Wrap"/>
                         </TabItem.Header>
-                        <local:SignalConvolution  Margin="9 0 0 0" />
+                        <local:AdvancedOperations  Margin="9 0 0 0" />
                     </TabItem>
                 </dragablz:TabablzControl>
             </materialDesign:ColorZone>
