@@ -371,29 +371,43 @@ namespace View.ViewModel
                 return;
             }
 
-            var signal1 = _dataHandlers[sig1];
-            var signal2 = _dataHandlers[sig2];
-            
+            var signal1 = new DataHandler(_dataHandlers[sig1]);
+            var signal2 = new DataHandler(_dataHandlers[sig2]);
+            if (signal1.IsScattered)
+            {
+                signal1.SamplesY = signal1.Y;
+                signal1.SamplesX = signal1.X;
+            }
+            if (signal2.IsScattered)
+            {
+                signal2.SamplesY = signal2.Y;
+                signal2.SamplesX = signal2.X;
+            }
 
             List<double> result;
             switch (OperationTypeComboBoxSelected)
             {
                 case "Correlation":
-                    signal2.Y.Reverse();
+                    signal2.SamplesY.Reverse();
                     goto case "Convolution";
                 case "Convolution":
                 
-                    if (!signal1.IsScattered || !signal2.IsScattered)
-                    {
-                        MessageBox.Show($"Both signals have to be discrete", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                        return;
-                    }
-                    result = SignalUtils.AdvancedOperations.DiscreteConvolution(signal1.Y,
-                        signal2.Y);
+                    
+                    result = SignalUtils.AdvancedOperations.DiscreteConvolution(signal1.SamplesY,
+                        signal2.SamplesY);
+                    /*result = SignalUtils.AdvancedOperations.DiscreteConvolution(new List<double>()
+                        {
+                            1,2,4,8
+                        }, 
+                        new List<double>()
+                        {
+                            5,4,3,2
+
+                        });*/
 
                     //var temp = signal1.X.First() < signal2.X.First() ? signal1 : signal2;
                     //TODO: How to generate Xs?????
-                    var xValues = ExtendXValues(signal1.X, result.Count);
+                    var xValues = ExtendXValues(signal1.SamplesX, result.Count);
 
                     _dataHandlers.Add(new DataHandler()
                     {

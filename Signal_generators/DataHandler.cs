@@ -40,6 +40,15 @@ namespace SignalGenerators
 
         }
 
+        public DataHandler(DataHandler other)
+        {
+           X = new List<double>(other.X);
+           Y = new List<double>(other.Y);
+           SamplesX = new List<double>(other.SamplesX);
+           SamplesY = new List<double>(other.SamplesY);
+           IsScattered = other.IsScattered;
+        }
+
         public DataHandler(double amplitude, double duration, double startTime, double period, string signal, double fillFactor, double sTime, double probability, double samplingFrequency)
         {
             _generator.Amplitude = amplitude;
