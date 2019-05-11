@@ -4,15 +4,14 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{17E0426C-09BF-403D-8982-CA880689A01C}</ProjectGuid>
+    <ProjectGuid>{9556DD86-5297-4789-8A49-B7300B8BCC96}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Signal_generators</RootNamespace>
-    <AssemblyName>Signal_generators</AssemblyName>
+    <RootNamespace>FiltersGenerators</RootNamespace>
+    <AssemblyName>FiltersGenerators</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -42,14 +41,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DataHandler.cs" />
-    <Compile Include="Generator.cs" />
+    <Compile Include="FilterGenerator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SignalUtils\SignalUtils.csproj">
-      <Project>{35a979e8-5374-41cc-95a1-4363ac53d21f}</Project>
-      <Name>SignalUtils</Name>
+    <ProjectReference Include="..\Signal_generators\SignalGenerators.csproj">
+      <Project>{17e0426c-09bf-403d-8982-ca880689a01c}</Project>
+      <Name>SignalGenerators</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -68,6 +68,12 @@
                         </TabItem.Header>
                         <local:AdvancedOperations  Margin="9 0 0 0" />
                     </TabItem>
+                    <TabItem TextElement.Foreground="{DynamicResource MaterialDesignBody}">
+                        <TabItem.Header>
+                            <TextBlock Text="Filtering" TextWrapping="Wrap"/>
+                        </TabItem.Header>
+                        <local:Filtering  Margin="9 0 0 0" />
+                    </TabItem>
                 </dragablz:TabablzControl>
             </materialDesign:ColorZone>
             

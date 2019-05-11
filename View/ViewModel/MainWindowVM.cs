@@ -6,12 +6,14 @@ using Microsoft.Win32;
 using SignalGenerators;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
+using FiltersGenerators;
 using SignalUtils;
 using View.Helper;
 using View.ViewModel.Base;
@@ -86,7 +88,7 @@ namespace View.ViewModel
         public Func<double, string> YFormatter { get; set; }
 
         #endregion
-        
+
 
         public double FillFactorTextBox { get; set; }
 
@@ -221,6 +223,22 @@ namespace View.ViewModel
 
         #endregion
 
+        #region Filtering
+        public ObservableCollection<string> FilterTypeCombobox { get; }
+        public string FilterTypeComboBoxSelected { get; set; }
+        public ICommand GenerateFilter { get; }
+        private List<DataHandler> _filters = new List<DataHandler>();
+        public double CutOffFrequencyTextBox { get; set; }
+        public int MParameterTextBox { get; set; }
+        public bool DrawFilterChecked { get; set; }
+
+        private List<string> _filtersNames = new List<string>();
+        private bool _isFilter = false;
+        public ObservableCollection<string> FiltersComboBox { get; set; }
+        public string FiltersComboBoxSelected { get; set; }
+        public ICommand ApplyFilterBTN { get; }
+        #endregion
+
 
         #endregion
 
@@ -281,13 +299,13 @@ namespace View.ViewModel
             ReadWindowsSetting();
             ApplyBase(_isDarkTheme);
 
-            ReconstructComboBox = new CollectionView(new List<string>()
+            ReconstructComboBox = new CollectionView(new List<string>
             {
                 "From Samples",
                 "From Quanta"
             });
 
-            ReconstructionMethodComboBox = new CollectionView(new List<string>()
+            ReconstructionMethodComboBox = new CollectionView(new List<string>
             {
                 "Sinus Cardinalis",
                 "First Order"
@@ -298,12 +316,19 @@ namespace View.ViewModel
 
             #region Advanced Operations
 
-            OperationTypeComboBox = new CollectionView(new List<string>()
+            OperationTypeComboBox = new CollectionView(new List<string>
             {
                 "Convolution",
                 "Correlation"
             });
             DoItButton = new RelayCommand(DoOperation);
+
+            FilterTypeCombobox = new ObservableCollection<string>
+            {
+                "Low-pass filter"
+            };
+            GenerateFilter = new RelayCommand(CreateFilter);
+            ApplyFilterBTN = new RelayCommand(ApplyFilter);
 
             #endregion
 
@@ -348,11 +373,46 @@ namespace View.ViewModel
 
         #region methods
 
-        #region Advanced Operations Methods
+        #region Zad 3
+
+        private void CreateFilter()
+        {
+            switch (FilterTypeComboBoxSelected)
+            {
+                case "Low-pass filter":
+                    _filters.Add(FilterGenerator.LowPass(MParameterTextBox, SamplingFrequencyTextBox, CutOffFrequencyTextBox));
+                    _filters.Last().Signal = FilterTypeComboBoxSelected;
+                    break;
+            }
+            PopulateFiltersList();
+            if (DrawFilterChecked)
+            {
+                _dataHandlers.Add(_filters.Last());
+                DrawChart();
+            }
+        }
+
+        private void PopulateFiltersList()
+        {
+
+            _filtersNames = new List<string>();
+            foreach (var handler in _filters)
+            {
+                _signals.Add($"{_filters.IndexOf(handler)}. {handler.Signal}");
+            }
+
+            FiltersComboBox = new ObservableCollection<string>(_signals);
+        }
+
+        private void ApplyFilter()
+        {
+            _isFilter = true;
+            DoOperation();
+        }
 
         private void DoOperation()
         {
-            if (string.IsNullOrEmpty(OperationTypeComboBoxSelected))
+            if (string.IsNullOrEmpty(OperationTypeComboBoxSelected) && _isFilter == false)
             {
                 MessageBox.Show($"Please choose operation type", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
@@ -363,7 +423,7 @@ namespace View.ViewModel
             try
             {
                 sig1 = int.Parse(MainComboBoxSelected.Substring(0, 1));
-                sig2 = int.Parse(AdditionalComboBoxSelected.Substring(0, 1));
+                sig2 = int.Parse(_isFilter ? FiltersComboBoxSelected.Substring(0, 1) : AdditionalComboBoxSelected.Substring(0, 1));
             }
             catch (Exception e)
             {
@@ -373,6 +433,12 @@ namespace View.ViewModel
 
             var signal1 = new DataHandler(_dataHandlers[sig1]);
             var signal2 = new DataHandler(_dataHandlers[sig2]);
+            if (_isFilter)
+            {
+                signal2 = new DataHandler(_filters[sig2]);
+                OperationTypeComboBoxSelected = "Convolution";
+            }
+
             if (signal1.IsScattered)
             {
                 signal1.SamplesY = signal1.Y;
@@ -387,12 +453,13 @@ namespace View.ViewModel
             List<double> result;
             switch (OperationTypeComboBoxSelected)
             {
+
                 case "Correlation":
                     signal2.SamplesY.Reverse();
                     goto case "Convolution";
                 case "Convolution":
-                
-                    
+
+
                     result = SignalUtils.AdvancedOperations.DiscreteConvolution(signal1.SamplesY,
                         signal2.SamplesY);
                     /*result = SignalUtils.AdvancedOperations.DiscreteConvolution(new List<double>()
@@ -405,16 +472,16 @@ namespace View.ViewModel
 
                         });*/
 
-                    //var temp = signal1.X.First() < signal2.X.First() ? signal1 : signal2;
+                    var temp = signal1.X.First() < signal2.X.First() ? signal1 : signal2;
                     //TODO: How to generate Xs?????
-                    var xValues = ExtendXValues(signal1.SamplesX, result.Count);
+                    var xValues = ExtendXValues(temp.SamplesX, result.Count);
 
                     _dataHandlers.Add(new DataHandler()
                     {
                         Y = result,
                         X = xValues,
                         IsScattered = true,
-                        Signal = "result",
+                        Signal = $"{OperationTypeComboBoxSelected}: {MainComboBoxSelected} + {AdditionalComboBoxSelected}",
                         StartTime = xValues.First(),
                         EndTime = xValues.Last()
                     });
@@ -423,6 +490,7 @@ namespace View.ViewModel
             }
             PopulateSignalsList();
             DrawChart();
+            _isFilter = false;
 
         }
 
@@ -432,13 +500,17 @@ namespace View.ViewModel
             List<double> temp = new List<double>(existing);
             for (int i = existing.Count; i < target; i++)
             {
-                temp.Add(temp[i-1] + delta);
+                temp.Add(temp[i - 1] + delta);
             }
 
             return temp;
         }
 
+
+
         #endregion
+
+        #region saving/loading
 
         private void LoadSignal()
         {
@@ -483,6 +555,10 @@ namespace View.ViewModel
 
         }
 
+        #endregion
+
+        #region Signal reconstruction
+
         private void Reconstruct()
         {
             if (string.IsNullOrEmpty(ReconstructComboBoxSelected) || string.IsNullOrEmpty(ReconstructionMethodComboBoxSelected))
@@ -501,13 +577,13 @@ namespace View.ViewModel
                 MessageBox.Show($"Error has occured: {e.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
-            
+
             DataHandler chart = _dataHandlers[option];
 
             List<double> quants = SignalUtils.Operations.Quantize(chart.SamplesY, QuantizationLevelsTextBox);
             var SampledValues = chart.SamplesY;
 
-            
+
 
             List<double> ValuesToReconstruct = new List<double>();
             if (ReconstructComboBoxSelected.Contains("From Samples"))
@@ -541,7 +617,7 @@ namespace View.ViewModel
             {
                 EnobTextBox = stats.ENOB;
             }
-            
+
 
             if (DrawReconstructedIsChecked)
             {
@@ -598,25 +674,16 @@ namespace View.ViewModel
 
         }
 
+        #endregion
+
+
+
         private void RemoveLatest()
         {
-            SeriesCollection.RemoveAt(SeriesCollection.Count-1);
+            SeriesCollection.RemoveAt(SeriesCollection.Count - 1);
         }
 
-        private void LoadStatistics()
-        {
 
-            if (_dataHandlers.Count > 0)
-            {
-                var option = int.Parse(MainComboBoxSelected.Substring(0, 1));
-                SignalAverageTextBox = _dataHandlers[option].Mean;
-                SignalVarianceTextBox = _dataHandlers[option].Variance;
-                SignalAbsoluteAverageTextBox = _dataHandlers[option].AbsMean;
-                SignalAveragePowerTextBox = _dataHandlers[option].AvgPower;
-                SignalRMSTextBox = _dataHandlers[option].Rms;
-
-            }
-        }
 
         private void PopulateSignalsList()
         {
@@ -636,6 +703,78 @@ namespace View.ViewModel
             }
 
         }
+
+        #region Zadanie 1
+
+        private void Operations()
+        {
+            List<double> result = new List<double>();
+            var first = int.Parse(MainComboBoxSelected.Substring(0, 1));
+            var second = int.Parse(AdditionalComboBoxSelected.Substring(0, 1));
+            bool isScattered = _dataHandlers[first].IsScattered;
+            try
+            {
+                switch (OperationComboBoxSelected)
+                {
+
+                    case "Add":
+                        result = SignalUtils.Operations.Add(_dataHandlers[first].SamplesY, _dataHandlers[second].SamplesY);
+                        break;
+                    case "Subtract":
+                        result = SignalUtils.Operations.Subtract(_dataHandlers[first].SamplesY, _dataHandlers[second].SamplesY);
+                        break;
+                    case "Multiply":
+                        result = SignalUtils.Operations.Multiply(_dataHandlers[first].SamplesY, _dataHandlers[second].SamplesY);
+                        break;
+                    case "Divide":
+                        result = SignalUtils.Operations.Divide(_dataHandlers[first].SamplesY, _dataHandlers[second].SamplesY);
+                        break;
+                }
+                _dataHandlers.Add(new DataHandler()
+                {
+                    Signal = "result",
+                    X = _dataHandlers[0].SamplesX,
+                    Y = result,
+                    IsScattered = true
+                });
+
+                DrawChart();
+
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show($"Error has occured: {e.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
+            PopulateSignalsList();
+            //Zad2();
+
+        }
+
+        private void LoadStatistics()
+        {
+
+            if (_dataHandlers.Count > 0)
+            {
+                try
+                {
+                    var option = int.Parse(MainComboBoxSelected.Substring(0, 1));
+                    SignalAverageTextBox = _dataHandlers[option].Mean;
+                    SignalVarianceTextBox = _dataHandlers[option].Variance;
+                    SignalAbsoluteAverageTextBox = _dataHandlers[option].AbsMean;
+                    SignalAveragePowerTextBox = _dataHandlers[option].AvgPower;
+                    SignalRMSTextBox = _dataHandlers[option].Rms;
+
+                }
+                catch (Exception e)
+                {
+                    // ignored
+                }
+            }
+        }
+        #endregion
+
+        #region Charts drawing
 
         private void RemoveChart()
         {
@@ -684,50 +823,6 @@ namespace View.ViewModel
             }
             PopulateSignalsList();
 
-
-        }
-
-        private void Operations()
-        {
-            List<double> result = new List<double>();
-            var first = int.Parse(MainComboBoxSelected.Substring(0, 1));
-            var second = int.Parse(AdditionalComboBoxSelected.Substring(0, 1));
-            bool isScattered = _dataHandlers[first].IsScattered;
-            try
-            {
-                switch (OperationComboBoxSelected)
-                {
-
-                    case "Add":
-                        result = SignalUtils.Operations.Add(_dataHandlers[first].Y, _dataHandlers[second].Y);
-                        break;
-                    case "Subtract":
-                        result = SignalUtils.Operations.Subtract(_dataHandlers[first].Y, _dataHandlers[second].Y);
-                        break;
-                    case "Multiply":
-                        result = SignalUtils.Operations.Multiply(_dataHandlers[first].Y, _dataHandlers[second].Y);
-                        break;
-                    case "Divide":
-                        result = SignalUtils.Operations.Divide(_dataHandlers[first].Y, _dataHandlers[second].Y);
-                        break;
-                }
-                _dataHandlers.Add(new DataHandler()
-                {
-                    Signal = "result",
-                    X = _dataHandlers[0].X,
-                    Y = result,
-                    IsScattered = isScattered
-                });
-                DrawChart();
-
-            }
-            catch (Exception e)
-            {
-                MessageBox.Show($"Error has occured: {e.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-
-            //PopulateSignalsList();
-            //Zad2();
 
         }
 
@@ -785,7 +880,7 @@ namespace View.ViewModel
                     {
                         lineValues.Add(new ObservablePoint(entry.X[i], entry.Y[i]));
                     }
-                    
+
                     if (entry.IsScattered)
                     {
                         SeriesCollection.Add(new ScatterSeries()
@@ -794,6 +889,14 @@ namespace View.ViewModel
                             StrokeThickness = 8,
                             Title = $"{_dataHandlers.IndexOf(entry)}. {entry.Signal}",
                             Values = lineValues
+                        });
+                        SeriesCollection.Add(new LineSeries()
+                        {
+                            Fill = Brushes.Transparent,
+                            Title = $"{_dataHandlers.IndexOf(entry)}. {entry.Signal}",
+                            Values = lineValues,
+                            PointGeometry = null,
+
                         });
                     }
                     else
@@ -819,6 +922,10 @@ namespace View.ViewModel
                 MessageBox.Show($"Error has occured: {e.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
+
+        #endregion
+
+
 
         private void ResolveAdditionalValues(string value)
         {
@@ -863,6 +970,6 @@ namespace View.ViewModel
 
         #endregion
 
-        
+
     }
 }

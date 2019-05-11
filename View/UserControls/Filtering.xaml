@@ -1,0 +1,47 @@
+﻿<UserControl x:Class="View.Filtering"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:View"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+             TextElement.FontWeight="Regular"
+             TextElement.FontSize="13"
+             TextOptions.TextFormattingMode="Ideal"
+             TextOptions.TextRenderingMode="Auto"
+             Background="{DynamicResource MaterialDesignPaper}"
+             FontFamily="{DynamicResource MaterialDesignFont}"
+             mc:Ignorable="d" 
+             d:DesignHeight="800" d:DesignWidth="250">
+    <Grid>
+        <StackPanel>
+            <ComboBox
+                ItemsSource="{Binding Path=FilterTypeCombobox}" 
+                SelectedValue="{Binding Path=FilterTypeComboBoxSelected}" 
+                materialDesign:HintAssist.Hint="Filter type"/>
+            <TextBox
+                materialDesign:HintAssist.Hint="Sampling Frequency"
+                Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                Text="{Binding SamplingFrequencyTextBox}"  />
+            <TextBox
+                materialDesign:HintAssist.Hint="Cut-off frequency"
+                Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                Text="{Binding CutOffFrequencyTextBox}"  />
+            <TextBox
+                materialDesign:HintAssist.Hint="M parameter"
+                Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                Text="{Binding MParameterTextBox}"  />
+
+            <CheckBox IsChecked="{Binding DrawFilterChecked}">Draw Filter</CheckBox>
+            <Button Grid.Row="2" Content="Generate Filter" Margin="10 10" Command="{Binding GenerateFilter}" />
+
+            
+            <ComboBox materialDesign:HintAssist.Hint="Signal" Grid.Column="1" ItemsSource="{Binding Path=SignalsComboBox}" SelectedValue="{Binding Path=MainComboBoxSelected}"  />
+
+            <ComboBox materialDesign:HintAssist.Hint="Filter"  Grid.Column="1" ItemsSource="{Binding Path=FiltersComboBox}" SelectedValue="{Binding Path=FiltersComboBoxSelected}"  />
+            <Button Grid.Row="2" Content="Apply Filter" Margin="10 10" Command="{Binding ApplyFilterBTN}" />
+        </StackPanel>
+
+    </Grid>
+</UserControl>
