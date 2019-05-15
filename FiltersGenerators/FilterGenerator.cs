@@ -21,7 +21,6 @@ namespace FiltersGenerators
             else
             {
                 k = customK;
-
             }
 
             temp.IsScattered = true;
@@ -37,6 +36,14 @@ namespace FiltersGenerators
             }
 
             return temp;
+        }
+
+        private static double innerFunction(int n, int m, double k)
+        {
+            var func = n - (m - 1) / 2;
+            var upper = Math.Sin(2 * Math.PI * func / k);
+            var lower = Math.PI * func;
+            return upper / lower;
         }
 
         public static DataHandler MidPass(int m, double samplingFrequency, double cutFrequency)
@@ -95,12 +102,6 @@ namespace FiltersGenerators
         }
 
 
-        private static double innerFunction(int n, int m, double k)
-        {
-            var func = n - (m - 1) / 2;
-            var upper = Math.Sin(2 * Math.PI * func / k);
-            var lower = Math.PI * func;
-            return upper / lower;
-        }
+       
     }
 }
