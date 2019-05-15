@@ -32,7 +32,8 @@
         
             <ComboBox
                 ItemsSource="{Binding Path=OperationTypeComboBox}" 
-                SelectedValue="{Binding Path=OperationTypeComboBoxSelected}" 
+                SelectedValue="{Binding Path=OperationTypeComboBoxSelected}"
+                Style="{StaticResource MaterialDesignFloatingHintComboBox}"
                 materialDesign:HintAssist.Hint="Operation"/>
             <StackPanel Grid.Row="1">
                 <Grid Margin="0 0 5 5">

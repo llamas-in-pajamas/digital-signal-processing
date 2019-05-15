@@ -87,6 +87,15 @@ namespace View.ViewModel
 
         public Func<double, string> YFormatter { get; set; }
 
+        public ObservableCollection<string> DrawableCombobox { get; set; }
+        public string DrawableComboBoxSelected { get; set; }
+        private List<string> _drawableNames = new List<string>();
+        public ObservableCollection<string> DrawedComboBox { get; set; } = new ObservableCollection<string>();
+        public string DrawedComboBoxSelected { get; set; }
+
+        public ICommand DrawCommand { get; }
+        public ICommand RemoveChartCommand { get; }
+
         #endregion
 
 
@@ -230,7 +239,7 @@ namespace View.ViewModel
         private List<DataHandler> _filters = new List<DataHandler>();
         public double CutOffFrequencyTextBox { get; set; }
         public int MParameterTextBox { get; set; }
-        public bool DrawFilterChecked { get; set; }
+
 
         private List<string> _filtersNames = new List<string>();
         private bool _isFilter = false;
@@ -287,7 +296,7 @@ namespace View.ViewModel
             OperationComboBoxSelected = list1[0];
             SignalComboBox = new CollectionView(list);
             SignalComboBoxSelected = list[0];
-            RemoveButton = new RelayCommand(RemoveChart);
+            RemoveButton = new RelayCommand(RemoveSignal);
             DoOperationButton = new RelayCommand(Operations);
             SaveButton = new RelayCommand(async () => await Task.Run(() => SaveSignal()));
             LoadButton = new RelayCommand(LoadSignal);
@@ -314,6 +323,8 @@ namespace View.ViewModel
             ReconstructButton = new RelayCommand(Reconstruct);
             RemoveLatestButton = new RelayCommand(RemoveLatest);
 
+
+
             #region Advanced Operations
 
             OperationTypeComboBox = new CollectionView(new List<string>
@@ -332,6 +343,8 @@ namespace View.ViewModel
 
             #endregion
 
+            DrawCommand = new RelayCommand(DrawChart);
+            RemoveChartCommand = new RelayCommand(RemoveChart);
 
         }
 
@@ -377,31 +390,52 @@ namespace View.ViewModel
 
         private void CreateFilter()
         {
-            switch (FilterTypeComboBoxSelected)
+            try
             {
-                case "Low-pass filter":
-                    _filters.Add(FilterGenerator.LowPass(MParameterTextBox, SamplingFrequencyTextBox, CutOffFrequencyTextBox));
-                    _filters.Last().Signal = FilterTypeComboBoxSelected;
-                    break;
+                switch (FilterTypeComboBoxSelected)
+                {
+                    case "Low-pass filter":
+                        _filters.Add(FilterGenerator.LowPass(MParameterTextBox, SamplingFrequencyTextBox, CutOffFrequencyTextBox));
+                        _filters.Last().Signal = FilterTypeComboBoxSelected;
+                        break;
+                }
             }
+            catch (Exception e)
+            {
+                MessageBox.Show($"Error: {e.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
             PopulateFiltersList();
-            if (DrawFilterChecked)
-            {
-                _dataHandlers.Add(_filters.Last());
-                DrawChart();
-            }
+            PopulateDrawableList();
         }
 
         private void PopulateFiltersList()
         {
 
             _filtersNames = new List<string>();
-            foreach (var handler in _filters)
+            foreach (var filter in _filters)
             {
-                _signals.Add($"{_filters.IndexOf(handler)}. {handler.Signal}");
+                _filtersNames.Add($"{_filters.IndexOf(filter)}. {filter.Signal}");
             }
 
-            FiltersComboBox = new ObservableCollection<string>(_signals);
+            FiltersComboBox = new ObservableCollection<string>(_filtersNames);
+        }
+
+        private void PopulateDrawableList()
+        {
+
+            _drawableNames = new List<string>();
+            foreach (var filter in _filters)
+            {
+                _drawableNames.Add($"F{_filters.IndexOf(filter)}. {filter.Signal}");
+            }
+            foreach (var handler in _dataHandlers)
+            {
+                _drawableNames.Add($"S{_dataHandlers.IndexOf(handler)}. {handler.Signal}");
+            }
+
+            DrawableCombobox = new ObservableCollection<string>(_drawableNames);
         }
 
         private void ApplyFilter()
@@ -489,7 +523,8 @@ namespace View.ViewModel
                     break;
             }
             PopulateSignalsList();
-            DrawChart();
+            PopulateDrawableList();
+            //DrawChart();
             _isFilter = false;
 
         }
@@ -527,7 +562,8 @@ namespace View.ViewModel
                 dataHandler.Load(path);
                 _dataHandlers.Add(dataHandler);
                 PopulateSignalsList();
-                DrawChart();
+                PopulateDrawableList();
+                //DrawChart();
 
             }
         }
@@ -738,16 +774,16 @@ namespace View.ViewModel
                     IsScattered = true
                 });
 
-                DrawChart();
+                //DrawChart();
 
             }
             catch (Exception e)
             {
                 MessageBox.Show($"Error has occured: {e.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-
+            PopulateDrawableList();
             PopulateSignalsList();
-            //Zad2();
+
 
         }
 
@@ -776,7 +812,7 @@ namespace View.ViewModel
 
         #region Charts drawing
 
-        private void RemoveChart()
+        private void RemoveSignal()
         {
 
             try
@@ -791,8 +827,9 @@ namespace View.ViewModel
                 MessageBox.Show($"Error has occured: {e.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             PopulateSignalsList();
+            PopulateDrawableList();
 
-            DrawChart();
+            //DrawChart();
         }
 
         private void GenerateChart()
@@ -813,7 +850,7 @@ namespace View.ViewModel
                 );
                 dataHandler.Call();
                 _dataHandlers.Add(dataHandler);
-                DrawChart();
+                //DrawChart();
 
 
             }
@@ -822,6 +859,7 @@ namespace View.ViewModel
                 MessageBox.Show($"Error has occured: {e.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             PopulateSignalsList();
+            PopulateDrawableList();
 
 
         }
@@ -866,56 +904,62 @@ namespace View.ViewModel
 
         private void DrawChart()
         {
+            var type = DrawableComboBoxSelected.Substring(0, 1);
+            var index = int.Parse(DrawableComboBoxSelected.Substring(1, 1));
+            DataHandler chartToDraw = null;
+            switch (type)
+            {
+                case "S":
+                    chartToDraw = _dataHandlers[index];
+                    break;
+                case "F":
+                    chartToDraw = _filters[index];
+                    break;
+
+            }
+
             Labels = null;
             try
             {
 
-                SeriesCollection = new SeriesCollection();
-
-                foreach (var entry in _dataHandlers)
+                ChartValues<ObservablePoint> lineValues = new ChartValues<ObservablePoint>();
+                for (int i = 0; i < chartToDraw.X.Count; i++)
                 {
+                    lineValues.Add(new ObservablePoint(chartToDraw.X[i], chartToDraw.Y[i]));
+                }
+                var title = $"{type}{index}. {chartToDraw.Signal}";
 
-                    ChartValues<ObservablePoint> lineValues = new ChartValues<ObservablePoint>();
-                    for (int i = 0; i < entry.X.Count; i++)
+                if (chartToDraw.IsScattered)
+                {
+                    SeriesCollection.Add(new ScatterSeries()
                     {
-                        lineValues.Add(new ObservablePoint(entry.X[i], entry.Y[i]));
-                    }
-
-                    if (entry.IsScattered)
+                        PointGeometry = new EllipseGeometry(),
+                        StrokeThickness = 8,
+                        Title = title,
+                        Values = lineValues
+                    });
+                    SeriesCollection.Add(new LineSeries()
                     {
-                        SeriesCollection.Add(new ScatterSeries()
-                        {
-                            PointGeometry = new EllipseGeometry(),
-                            StrokeThickness = 8,
-                            Title = $"{_dataHandlers.IndexOf(entry)}. {entry.Signal}",
-                            Values = lineValues
-                        });
-                        SeriesCollection.Add(new LineSeries()
-                        {
-                            Fill = Brushes.Transparent,
-                            Title = $"{_dataHandlers.IndexOf(entry)}. {entry.Signal}",
-                            Values = lineValues,
-                            PointGeometry = null,
+                        Fill = Brushes.Transparent,
+                        Title = title,
+                        Values = lineValues,
+                        PointGeometry = null,
 
-                        });
-                    }
-                    else
+                    });
+                }
+                else
+                {
+                    SeriesCollection.Add(new LineSeries()
                     {
-                        SeriesCollection.Add(new LineSeries()
-                        {
-                            Fill = Brushes.Transparent,
-                            Title = $"{_dataHandlers.IndexOf(entry)}. {entry.Signal}",
-                            Values = lineValues,
-                            PointGeometry = null,
+                        Fill = Brushes.Transparent,
+                        Title = title,
+                        Values = lineValues,
+                        PointGeometry = null,
 
-                        });
-
-
-                    }
-
+                    });
 
                 }
-
+                DrawedComboBox.Add(title);
             }
             catch (Exception e)
             {
@@ -924,6 +968,24 @@ namespace View.ViewModel
         }
 
         #endregion
+
+        private void RemoveChart()
+        {
+            try
+            {
+                var chart = SeriesCollection.Where(c => c.Title == DrawedComboBoxSelected).ToList();
+                foreach (var seriesView in chart)
+                {
+                    SeriesCollection.Remove(seriesView);
+                }
+                
+                DrawedComboBox.Remove(DrawedComboBoxSelected);
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show($"Error has occured: {e.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
 
 
 

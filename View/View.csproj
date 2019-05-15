@@ -80,6 +80,9 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Converters\EnumMatchToBooleanConverter.cs" />
+    <Compile Include="UserControls\Drawing.xaml.cs">
+      <DependentUpon>Drawing.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UserControls\Filtering.xaml.cs">
       <DependentUpon>Filtering.xaml</DependentUpon>
     </Compile>
@@ -103,6 +106,10 @@
     <Compile Include="ViewModel\Base\BaseVM.cs" />
     <Compile Include="ViewModel\Base\RelayCommand.cs" />
     <Compile Include="ViewModel\MainWindowVM.cs" />
+    <Page Include="UserControls\Drawing.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UserControls\Filtering.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
