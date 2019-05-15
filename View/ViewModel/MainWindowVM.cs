@@ -246,6 +246,9 @@ namespace View.ViewModel
         public ObservableCollection<string> FiltersComboBox { get; set; }
         public string FiltersComboBoxSelected { get; set; }
         public ICommand ApplyFilterBTN { get; }
+
+        public ObservableCollection<string> WindowTypeCombobox { get; set; }
+        public string WindowTypeComboBoxSelected { get; set; }
         #endregion
 
 
@@ -336,7 +339,10 @@ namespace View.ViewModel
 
             FilterTypeCombobox = new ObservableCollection<string>
             {
-                "Low-pass filter"
+                "Low-pass filter",
+                "Mid-pass filter",
+                "High-pass filter"
+
             };
             GenerateFilter = new RelayCommand(CreateFilter);
             ApplyFilterBTN = new RelayCommand(ApplyFilter);
@@ -345,6 +351,15 @@ namespace View.ViewModel
 
             DrawCommand = new RelayCommand(DrawChart);
             RemoveChartCommand = new RelayCommand(RemoveChart);
+
+            WindowTypeCombobox = new ObservableCollection<string>
+            {
+                "No Window",
+                "Hamming Window",
+                "Hanning Window",
+                "Blackman Window"
+            };
+            WindowTypeComboBoxSelected = WindowTypeCombobox[0];
 
         }
 
@@ -390,21 +405,54 @@ namespace View.ViewModel
 
         private void CreateFilter()
         {
+            DataHandler filter = null;
             try
             {
                 switch (FilterTypeComboBoxSelected)
                 {
                     case "Low-pass filter":
-                        _filters.Add(FilterGenerator.LowPass(MParameterTextBox, SamplingFrequencyTextBox, CutOffFrequencyTextBox));
-                        _filters.Last().Signal = FilterTypeComboBoxSelected;
+                        filter = FilterGenerator.LowPass(MParameterTextBox, SamplingFrequencyTextBox,
+                            CutOffFrequencyTextBox);
+                        _filters.Add(filter);
                         break;
+                    case "Mid-pass filter":
+                        filter = FilterGenerator.MidPass(MParameterTextBox, SamplingFrequencyTextBox,
+                            CutOffFrequencyTextBox);
+                        _filters.Add(filter);
+                        break;
+                    case "High-pass filter":
+                        filter = FilterGenerator.HighPass(MParameterTextBox, SamplingFrequencyTextBox,
+                            CutOffFrequencyTextBox);
+                        _filters.Add(filter);
+                        break;
+                    default:
+                        throw new ArgumentException("Provide filter type!");
+
                 }
+                
+
             }
             catch (Exception e)
             {
                 MessageBox.Show($"Error: {e.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
+
+            switch (WindowTypeComboBoxSelected)
+            {
+                case "No Window":
+                    break;
+                case "Hamming Window":
+                    FilterGenerator.HammingWindow(ref filter, MParameterTextBox);
+                    break;
+                case "Hanning Window":
+                    FilterGenerator.HanningWindow(ref filter, MParameterTextBox);
+                    break;
+                case "Blackman Window":
+                    FilterGenerator.BlackmanWindow(ref filter, MParameterTextBox);
+                    break;
+            }
+            filter.Signal = FilterTypeComboBoxSelected + " " + WindowTypeComboBoxSelected;
 
             PopulateFiltersList();
             PopulateDrawableList();
@@ -978,7 +1026,7 @@ namespace View.ViewModel
                 {
                     SeriesCollection.Remove(seriesView);
                 }
-                
+
                 DrawedComboBox.Remove(DrawedComboBoxSelected);
             }
             catch (Exception e)

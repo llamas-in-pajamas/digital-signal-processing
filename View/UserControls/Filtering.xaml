@@ -22,6 +22,12 @@
                 SelectedValue="{Binding Path=FilterTypeComboBoxSelected}" 
                 Style="{StaticResource MaterialDesignFloatingHintComboBox}"
                 materialDesign:HintAssist.Hint="Filter type"/>
+            <ComboBox
+                Margin="10"
+                ItemsSource="{Binding Path=WindowTypeCombobox}" 
+                SelectedValue="{Binding Path=WindowTypeComboBoxSelected}" 
+                Style="{StaticResource MaterialDesignFloatingHintComboBox}"
+                materialDesign:HintAssist.Hint="Window type"/>
             <TextBox
                 Margin="10"
                 materialDesign:HintAssist.Hint="Sampling Frequency"

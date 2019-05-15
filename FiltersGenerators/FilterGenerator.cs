@@ -23,7 +23,7 @@ namespace FiltersGenerators
                 k = customK;
 
             }
-            
+
             temp.IsScattered = true;
             for (int i = 1; i <= m; i++)
             {
