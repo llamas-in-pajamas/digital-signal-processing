@@ -431,6 +431,7 @@ namespace View.ViewModel
                 }
                 
 
+
             }
             catch (Exception e)
             {
@@ -554,9 +555,14 @@ namespace View.ViewModel
 
                         });*/
 
+                    if (_isFilter)
+                    {
+                        result = result.Skip((signal2.SamplesY.Count - 1) / 2).Take(signal1.SamplesY.Count).ToList();
+                    }
+
                     var temp = signal1.X.First() < signal2.X.First() ? signal1 : signal2;
-                    //TODO: How to generate Xs?????
                     var xValues = ExtendXValues(temp.SamplesX, result.Count);
+                    
 
                     _dataHandlers.Add(new DataHandler()
                     {
@@ -567,12 +573,12 @@ namespace View.ViewModel
                         StartTime = xValues.First(),
                         EndTime = xValues.Last()
                     });
+                    
                     _dataHandlers.Last().GenerateStats();
                     break;
             }
             PopulateSignalsList();
             PopulateDrawableList();
-            //DrawChart();
             _isFilter = false;
 
         }
