@@ -31,7 +31,7 @@ namespace View.ViewModel
 
         private string _signalComboBoxSelected;
 
-        private List<DataHandler> _dataHandlers = new List<DataHandler>();
+        internal List<DataHandler> _dataHandlers = new List<DataHandler>();
         private List<string> _signals = new List<string>();
 
         //VM FIELDS
@@ -832,9 +832,10 @@ namespace View.ViewModel
                 _dataHandlers.Add(new DataHandler()
                 {
                     Signal = "result",
-                    X = _dataHandlers[0].SamplesX,
+                    X = _dataHandlers[first].SamplesX,
                     Y = result,
-                    IsScattered = true
+                    IsScattered = true,
+                    SamplingFrequency = _dataHandlers[first].SamplingFrequency
                 });
 
                 //DrawChart();

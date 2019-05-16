@@ -33,7 +33,7 @@ namespace SignalGenerators
         public double Variance { get; set; }
 
         private List<double> _ysToSave = new List<double>();
-        private double _samplingFrequency;
+        public double SamplingFrequency { get; set; }
 
         public DataHandler()
         {
@@ -48,6 +48,7 @@ namespace SignalGenerators
            SamplesY = new List<double>(other.SamplesY);
            IsScattered = other.IsScattered;
            _period = other._period;
+           SamplingFrequency = other.SamplingFrequency;
         }
 
         public DataHandler(double amplitude, double duration, double startTime, double period, string signal, double fillFactor, double sTime, double probability, double samplingFrequency)
@@ -58,7 +59,7 @@ namespace SignalGenerators
             _generator.FillFactor = fillFactor;
             _generator.STime = sTime;
             _generator.Probability = probability;
-            _samplingFrequency = samplingFrequency;
+            SamplingFrequency = samplingFrequency;
             _period = period;
             _duration = duration;
             StartTime = startTime;
@@ -107,12 +108,12 @@ namespace SignalGenerators
         {
             if (IsScattered)
             {
-                _samplingFrequency = 1.0 / _period;
+                SamplingFrequency = 1.0 / _period;
                 _ysToSave = Y;
                 return;
             }
 
-            _samplingFrequency = samplingFrequency;
+            SamplingFrequency = samplingFrequency;
             CalculateSamplesToSave(samplingFrequency);
 
         }
@@ -139,7 +140,7 @@ namespace SignalGenerators
             using (BinaryWriter writer = new BinaryWriter(File.Create(path)))
             {
                 writer.Write(StartTime);
-                writer.Write(_samplingFrequency);
+                writer.Write(SamplingFrequency);
                 writer.Write(_ysToSave.Count);
                 foreach (double sample in _ysToSave) writer.Write(sample);
             }
@@ -151,7 +152,7 @@ namespace SignalGenerators
             using (StreamWriter writer = new StreamWriter(path))
             {
                 writer.WriteLine("t_1[s]: " + StartTime);
-                writer.WriteLine("f[Hz]: " + _samplingFrequency);
+                writer.WriteLine("f[Hz]: " + SamplingFrequency);
                 writer.WriteLine("Y.Count: " + _ysToSave.Count);
                 foreach (double sample in _ysToSave) writer.WriteLine(sample);
             }
@@ -260,7 +261,7 @@ namespace SignalGenerators
                 X.Add(i);
                 Y.Add(_generator.UnitImpulse(i));
             }
-            for (double i = StartTime; i < EndTime; i += 1 / _samplingFrequency)
+            for (double i = StartTime; i < EndTime; i += 1 / SamplingFrequency)
             {
                 SamplesX.Add(i);
                 SamplesY.Add(_generator.UnitImpulse(i));
@@ -274,7 +275,7 @@ namespace SignalGenerators
                 X.Add(i);
                 Y.Add(_generator.ImpulseNoise());
             }
-            for (double i = StartTime; i < EndTime; i += 1 / _samplingFrequency)
+            for (double i = StartTime; i < EndTime; i += 1 / SamplingFrequency)
             {
                 SamplesX.Add(i);
                 SamplesY.Add(_generator.ImpulseNoise());
@@ -287,7 +288,7 @@ namespace SignalGenerators
                 X.Add(i);
                 Y.Add(_generator.GaussianNoise());
             }
-            for (double i = StartTime; i < EndTime; i += 1 / _samplingFrequency)
+            for (double i = StartTime; i < EndTime; i += 1 / SamplingFrequency)
             {
                 SamplesX.Add(i);
                 SamplesY.Add(_generator.GaussianNoise());
@@ -300,7 +301,7 @@ namespace SignalGenerators
                 X.Add(i);
                 Y.Add(_generator.UniformNoise());
             }
-            for (double i = StartTime; i < EndTime; i += 1 / _samplingFrequency)
+            for (double i = StartTime; i < EndTime; i += 1 / SamplingFrequency)
             {
                 SamplesX.Add(i);
                 SamplesY.Add(_generator.UniformNoise());
@@ -314,7 +315,7 @@ namespace SignalGenerators
                 X.Add(i);
                 Y.Add(_generator.Triangular(i));
             }
-            for (double i = StartTime; i < EndTime; i += 1 / _samplingFrequency)
+            for (double i = StartTime; i < EndTime; i += 1 / SamplingFrequency)
             {
                 SamplesX.Add(i);
                 SamplesY.Add(_generator.Triangular(i));
@@ -327,7 +328,7 @@ namespace SignalGenerators
                 X.Add(i);
                 Y.Add(_generator.UnitJump(i));
             }
-            for (double i = StartTime; i < EndTime; i += 1 / _samplingFrequency)
+            for (double i = StartTime; i < EndTime; i += 1 / SamplingFrequency)
             {
                 SamplesX.Add(i);
                 SamplesY.Add(_generator.UnitJump(i));
@@ -340,7 +341,7 @@ namespace SignalGenerators
                 X.Add(i);
                 Y.Add(_generator.RectanguralSymetrical(i));
             }
-            for (double i = StartTime; i < EndTime; i += 1 / _samplingFrequency)
+            for (double i = StartTime; i < EndTime; i += 1 / SamplingFrequency)
             {
                 SamplesX.Add(i);
                 SamplesY.Add(_generator.RectanguralSymetrical(i));
@@ -354,7 +355,7 @@ namespace SignalGenerators
                 X.Add(i);
                 Y.Add(_generator.Rectangural(i));
             }
-            for (double i = StartTime; i < EndTime; i += 1 / _samplingFrequency)
+            for (double i = StartTime; i < EndTime; i += 1 / SamplingFrequency)
             {
                 SamplesX.Add(i);
                 SamplesY.Add(_generator.Rectangural(i));
@@ -368,7 +369,7 @@ namespace SignalGenerators
                 X.Add(i);
                 Y.Add(_generator.Sinusoidal2P(i));
             }
-            for (double i = StartTime; i < EndTime; i += 1 / _samplingFrequency)
+            for (double i = StartTime; i < EndTime; i += 1 / SamplingFrequency)
             {
                 SamplesX.Add(i);
                 SamplesY.Add(_generator.Sinusoidal2P(i));
@@ -382,7 +383,7 @@ namespace SignalGenerators
                 X.Add(i);
                 Y.Add(_generator.Sinusoidal1P(i));
             }
-            for (double i = StartTime; i < EndTime; i += 1 / _samplingFrequency)
+            for (double i = StartTime; i < EndTime; i += 1 / SamplingFrequency)
             {
                 SamplesX.Add(i);
                 SamplesY.Add(_generator.Sinusoidal1P(i));
@@ -396,7 +397,7 @@ namespace SignalGenerators
                 X.Add(i);
                 Y.Add(_generator.Sinusoidal(i));
             }
-            for (double i = StartTime; i < EndTime; i += 1 / _samplingFrequency)
+            for (double i = StartTime; i < EndTime; i += 1 / SamplingFrequency)
             {
                 SamplesX.Add(i);
                 SamplesY.Add(_generator.Sinusoidal(i));

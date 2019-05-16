@@ -26,25 +26,25 @@
             materialDesign:HintAssist.Hint="Signal speed"
             Style="{StaticResource MaterialDesignFloatingHintTextBox}"
             Margin="0 5 0 0"
-            Text="{Binding Lol }"  />
-            
+            Text="{Binding SignalSpeed }"  />
+
         <TextBox
             materialDesign:HintAssist.Hint="Report frequency [Hz]"
             Style="{StaticResource MaterialDesignFloatingHintTextBox}"
             Margin="0 10 0 0"
-            Text="{Binding Lol }"  />
+            Text="{Binding ReportFrequency }"  />
 
         <TextBlock Text="Signal source settings" FontWeight="Bold" TextAlignment="Center" Margin="0 20 0 0" />
         <TextBox
             materialDesign:HintAssist.Hint="Distance from signal source"
             Style="{StaticResource MaterialDesignFloatingHintTextBox}"
             Margin="0 5 0 0"
-            Text="{Binding Lol }"  />
+            Text="{Binding DistanceFromSource }"  />
         <TextBox
             materialDesign:HintAssist.Hint="Signal source speed"
             Style="{StaticResource MaterialDesignFloatingHintTextBox}"
             Margin="0 10 0 0"
-            Text="{Binding Lol }"  />
+            Text="{Binding SourceSpeed }"  />
         <Button
             Style="{StaticResource MaterialDesignRaisedButton}"
             materialDesign:ButtonProgressAssist.Value="-1"
@@ -60,8 +60,8 @@
             FontWeight="Bold"
             Margin="0 10 0 0"
             IsReadOnly="True"
-            Text="{Binding Lol }"  />
-        
+            Text="{Binding CalculatedDistance }"  />
+
 
 
     </StackPanel>
