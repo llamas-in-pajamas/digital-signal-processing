@@ -4,21 +4,27 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:View"
-             xmlns:wpf="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
+             xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="600">
     <Grid>
-        <wpf:CartesianChart Series="{Binding SeriesCollection}" LegendLocation="Right" DisableAnimations="True" Hoverable="False" DataTooltip="{x:Null}" Foreground="{DynamicResource MaterialDesignBody}" >
-            <wpf:CartesianChart.AxisY>
-                <wpf:Axis Title="f(x)" LabelFormatter="{Binding YFormatter}"></wpf:Axis>
-            </wpf:CartesianChart.AxisY>
-            <wpf:CartesianChart.AxisX>
-                <wpf:Axis Title="t[s]" Labels="{Binding Labels}" LabelsRotation="125">
-                    <wpf:Axis.Separator>
-                        <wpf:Separator IsEnabled="False" Step="1"></wpf:Separator>
-                    </wpf:Axis.Separator>
-                </wpf:Axis>
-            </wpf:CartesianChart.AxisX>
-        </wpf:CartesianChart>
+        <lvc:CartesianChart 
+            Series="{Binding SeriesCollection}" 
+            LegendLocation="Right" 
+            DisableAnimations="True" 
+            Hoverable="False" 
+            DataTooltip="{x:Null}" 
+            Foreground="{DynamicResource MaterialDesignBody}" >
+            <lvc:CartesianChart.AxisY>
+                <lvc:Axis Title="f(x)" LabelFormatter="{Binding YFormatter}"></lvc:Axis>
+            </lvc:CartesianChart.AxisY>
+            <lvc:CartesianChart.AxisX>
+                <lvc:Axis Title="t[s]" Labels="{Binding Labels}" LabelsRotation="125">
+                    <lvc:Axis.Separator>
+                        <lvc:Separator IsEnabled="False" Step="1"></lvc:Separator>
+                    </lvc:Axis.Separator>
+                </lvc:Axis>
+            </lvc:CartesianChart.AxisX>
+        </lvc:CartesianChart>
     </Grid>
 </UserControl>

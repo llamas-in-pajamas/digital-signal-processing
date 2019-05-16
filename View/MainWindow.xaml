@@ -111,6 +111,9 @@
                         <TabItem Header="Histogram">
                             <local:Histogram Margin="0 10" />
                         </TabItem>
+                        <TabItem Header="Sonar Charts">
+                            <local:SonarCharts DataContext="{Binding SonarVm}" Margin="0 10" />
+                        </TabItem>
                     </dragablz:TabablzControl>
                     <Grid Grid.Row="1">
                         <Grid.ColumnDefinitions>
