@@ -20,7 +20,7 @@ namespace View.ViewModel
         private DataHandler _signal;
         #region Props
 
-        public MainWindowVM Parent { get; set; }
+        
 
         #region Controls
 
@@ -55,7 +55,7 @@ namespace View.ViewModel
 
         #region VM props
 
-
+        public MainWindowVM Parent { get; set; }
 
         #endregion
 
@@ -129,7 +129,7 @@ namespace View.ViewModel
             recieved.AddRange(buffor);
             var correlated = SignalUtils.AdvancedOperations.DiscreteCorrelation(_signal.Y, recieved);
             DrawDelayed(recieved);
-            DrawCorrelate(correlated);
+            DrawCorrelated(correlated);
 
             List<double> rightHalf = correlated.Skip((correlated.Count - 1) / 2).ToList();
             int maximum = rightHalf.FindIndex(c => Math.Abs(c - rightHalf.Max()) < 0.000001);
@@ -157,18 +157,18 @@ namespace View.ViewModel
             
         }
 
-        private void DrawDelayed(List<double> receivedSignal)
+        private void DrawDelayed(List<double> delayedSignal)
         {
-            for (int i = 0; i < receivedSignal.Count; i++)
+            for (int i = 0; i < delayedSignal.Count; i++)
             {
-                DelayedValues[i] = receivedSignal[i];
+                DelayedValues[i] = delayedSignal[i];
             }
         }
-        private void DrawCorrelate(List<double> correlateSignal)
+        private void DrawCorrelated(List<double> correlatedSignal)
         {
-            for (int i = 0; i < correlateSignal.Count; i++)
+            for (int i = 0; i < correlatedSignal.Count; i++)
             {
-                CorrelationValues[i] = correlateSignal[i];
+                CorrelationValues[i] = correlatedSignal[i];
             }
         }
 
