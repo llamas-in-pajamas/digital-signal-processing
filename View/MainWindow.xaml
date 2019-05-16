@@ -80,6 +80,12 @@
                         </TabItem.Header>
                         <local:Drawing  Margin="9 0 0 0" />
                     </TabItem>
+                    <TabItem TextElement.Foreground="{DynamicResource MaterialDesignBody}">
+                        <TabItem.Header>
+                            <TextBlock Text="Sonar" TextWrapping="Wrap"/>
+                        </TabItem.Header>
+                        <local:SonarControls DataContext="{Binding SonarVm}"  Margin="9 0 0 0" />
+                    </TabItem>
                 </dragablz:TabablzControl>
             </materialDesign:ColorZone>
             

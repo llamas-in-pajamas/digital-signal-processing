@@ -26,5 +26,12 @@ namespace SignalUtils
 
             return result;
         }
+
+        public static List<double> DiscreteCorrelation(List<double> signal1, List<double> signal2)
+        {
+            List<double> reversed = new List<double>(signal1);
+            reversed.Reverse();
+            return DiscreteConvolution(reversed, signal2);
+        }
     }
 }

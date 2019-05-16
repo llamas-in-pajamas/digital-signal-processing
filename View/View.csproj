@@ -80,53 +80,68 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Converters\EnumMatchToBooleanConverter.cs" />
-    <Compile Include="UserControls\Drawing.xaml.cs">
+    <Compile Include="UserControls\SonarUCs\SonarCharts.xaml.cs">
+      <DependentUpon>SonarCharts.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\SonarUCs\SonarControls.xaml.cs">
+      <DependentUpon>SonarControls.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\Controls\Drawing.xaml.cs">
       <DependentUpon>Drawing.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UserControls\Filtering.xaml.cs">
+    <Compile Include="UserControls\Controls\Filtering.xaml.cs">
       <DependentUpon>Filtering.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UserControls\AdvancedOperations.xaml.cs">
+    <Compile Include="UserControls\Controls\AdvancedOperations.xaml.cs">
       <DependentUpon>AdvancedOperations.xaml</DependentUpon>
     </Compile>
     <Compile Include="FileStream\FileStream.cs" />
     <Compile Include="Helper\RadioButtonsEnum.cs" />
-    <Compile Include="UserControls\SignalOperations.xaml.cs">
+    <Compile Include="UserControls\Controls\SignalOperations.xaml.cs">
       <DependentUpon>SignalOperations.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UserControls\Signal Generator.xaml.cs">
+    <Compile Include="UserControls\Controls\Signal Generator.xaml.cs">
       <DependentUpon>Signal Generator.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UserControls\Histogram.xaml.cs">
+    <Compile Include="UserControls\Charts\Histogram.xaml.cs">
       <DependentUpon>Histogram.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UserControls\LineChart.xaml.cs">
+    <Compile Include="UserControls\Charts\LineChart.xaml.cs">
       <DependentUpon>LineChart.xaml</DependentUpon>
     </Compile>
     <Compile Include="ViewModel\Base\BaseVM.cs" />
     <Compile Include="ViewModel\Base\RelayCommand.cs" />
     <Compile Include="ViewModel\MainWindowVM.cs" />
-    <Page Include="UserControls\Drawing.xaml">
+    <Compile Include="ViewModel\SonarVM.cs" />
+    <Page Include="UserControls\SonarUCs\SonarCharts.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UserControls\Filtering.xaml">
+    <Page Include="UserControls\SonarUCs\SonarControls.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UserControls\AdvancedOperations.xaml">
+    <Page Include="UserControls\Controls\Drawing.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UserControls\SignalOperations.xaml">
+    <Page Include="UserControls\Controls\Filtering.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UserControls\Signal Generator.xaml">
+    <Page Include="UserControls\Controls\AdvancedOperations.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UserControls\Histogram.xaml">
+    <Page Include="UserControls\Controls\SignalOperations.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\Controls\Signal Generator.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\Charts\Histogram.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -142,7 +157,7 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="UserControls\LineChart.xaml">
+    <Page Include="UserControls\Charts\LineChart.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

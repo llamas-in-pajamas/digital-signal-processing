@@ -22,6 +22,13 @@ namespace View.ViewModel
 {
     public class MainWindowVM : BaseVM
     {
+        #region Other VMs
+
+        public SonarVM SonarVm { get; set; }
+
+        #endregion
+
+
         private string _signalComboBoxSelected;
 
         private List<DataHandler> _dataHandlers = new List<DataHandler>();
@@ -272,6 +279,8 @@ namespace View.ViewModel
         /// </summary>
         public MainWindowVM()
         {
+            SonarVm = new SonarVM(this);
+
             GenerateButton = new RelayCommand(GenerateChart);
             IList<string> list = new List<string>()
             {
