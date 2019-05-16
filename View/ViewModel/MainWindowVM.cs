@@ -429,7 +429,7 @@ namespace View.ViewModel
                         throw new ArgumentException("Provide filter type!");
 
                 }
-                
+
 
 
             }
@@ -562,7 +562,7 @@ namespace View.ViewModel
 
                     var temp = signal1.X.First() < signal2.X.First() ? signal1 : signal2;
                     var xValues = ExtendXValues(temp.SamplesX, result.Count);
-                    
+
 
                     _dataHandlers.Add(new DataHandler()
                     {
@@ -573,7 +573,7 @@ namespace View.ViewModel
                         StartTime = xValues.First(),
                         EndTime = xValues.Last()
                     });
-                    
+
                     _dataHandlers.Last().GenerateStats();
                     break;
             }
@@ -985,13 +985,6 @@ namespace View.ViewModel
 
                 if (chartToDraw.IsScattered)
                 {
-                    SeriesCollection.Add(new ScatterSeries()
-                    {
-                        PointGeometry = new EllipseGeometry(),
-                        StrokeThickness = 8,
-                        Title = title,
-                        Values = lineValues
-                    });
                     SeriesCollection.Add(new LineSeries()
                     {
                         Fill = Brushes.Transparent,
@@ -999,6 +992,13 @@ namespace View.ViewModel
                         Values = lineValues,
                         PointGeometry = null,
 
+                    });
+                    SeriesCollection.Add(new ScatterSeries()
+                    {
+                        PointGeometry = new EllipseGeometry(),
+                        StrokeThickness = 8,
+                        Title = title,
+                        Values = lineValues
                     });
                 }
                 else
