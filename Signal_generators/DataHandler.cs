@@ -9,9 +9,9 @@ namespace SignalGenerators
     public class DataHandler
     {
         //ARGUMENTS TAKEN FROM USER
-        private double _duration;
+        public double Duration { get; set; }
         public double StartTime { get; set; }
-        private double _period;
+        public double Period { get; set; }
         public string Signal;
         public bool IsScattered = false;
 
@@ -47,7 +47,7 @@ namespace SignalGenerators
            SamplesX = new List<double>(other.SamplesX);
            SamplesY = new List<double>(other.SamplesY);
            IsScattered = other.IsScattered;
-           _period = other._period;
+           Period = other.Period;
            SamplingFrequency = other.SamplingFrequency;
         }
 
@@ -60,16 +60,18 @@ namespace SignalGenerators
             _generator.STime = sTime;
             _generator.Probability = probability;
             SamplingFrequency = samplingFrequency;
-            _period = period;
-            _duration = duration;
+            Period = period;
+            Duration = duration;
             StartTime = startTime;
             Signal = signal;
-            EndTime = StartTime + _duration;
+            EndTime = StartTime + Duration;
 
             if (signal == "Impulse Noise" || signal == "Unit Impulse")
             {
                 IsScattered = true;
             }
+
+            
         }
 
         public void Load(string path)
@@ -79,7 +81,7 @@ namespace SignalGenerators
                 Y = new List<double>();
                 StartTime = reader.ReadDouble();
                 double frequency = reader.ReadDouble();
-                _period = 1.0 / frequency;
+                Period = 1.0 / frequency;
 
                 for (int i = 0, n = reader.ReadInt32(); i < n; i++)
                 {
@@ -108,7 +110,7 @@ namespace SignalGenerators
         {
             if (IsScattered)
             {
-                SamplingFrequency = 1.0 / _period;
+                SamplingFrequency = 1.0 / Period;
                 _ysToSave = Y;
                 return;
             }
@@ -165,7 +167,7 @@ namespace SignalGenerators
             X.Clear();
             Y.Clear();
             int numberOfSamples = CalculateNumberOfSamples();
-            _delta = _duration / numberOfSamples;
+            _delta = Duration / numberOfSamples;
             switch (Signal)
             {
                 case "Sinus":
@@ -247,7 +249,7 @@ namespace SignalGenerators
         {
             if (IsScattered)
             {
-                return (int)(Math.Abs(EndTime - StartTime) * _period);
+                return (int)(Math.Abs(EndTime - StartTime) * Period);
             }
 
             return 5000;

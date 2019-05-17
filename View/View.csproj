@@ -109,9 +109,14 @@
     <Compile Include="UserControls\Charts\LineChart.xaml.cs">
       <DependentUpon>LineChart.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ViewModel\AdvancedOperationsVM.cs" />
     <Compile Include="ViewModel\Base\BaseVM.cs" />
     <Compile Include="ViewModel\Base\RelayCommand.cs" />
+    <Compile Include="ViewModel\ChartHistogramVM.cs" />
+    <Compile Include="ViewModel\FilterVM.cs" />
     <Compile Include="ViewModel\MainWindowVM.cs" />
+    <Compile Include="ViewModel\ReconstructVM.cs" />
+    <Compile Include="ViewModel\SignalGeneratorVM.cs" />
     <Compile Include="ViewModel\SonarVM.cs" />
     <Page Include="UserControls\SonarUCs\SonarCharts.xaml">
       <SubType>Designer</SubType>

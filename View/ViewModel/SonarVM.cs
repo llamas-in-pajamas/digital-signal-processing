@@ -20,8 +20,6 @@ namespace View.ViewModel
         private DataHandler _signal;
         #region Props
 
-        
-
         #region Controls
 
         //sonar settings
@@ -92,7 +90,7 @@ namespace View.ViewModel
                 MessageBox.Show($"Error has occured: {e.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
-            _signal = Parent._dataHandlers[signal];
+            _signal = Parent.DataHandlers[signal];
             IsRunning = true;
             ButtonCommand = new RelayCommand(Stop);
             ButtonContent = "Stop Simulation";

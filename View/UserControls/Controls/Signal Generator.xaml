@@ -84,7 +84,7 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
             <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="Sampling Frequency: " TextAlignment="Right" />
-            <TextBox Grid.Column="1" Text="{Binding SamplingFrequencyTextBox}" Margin="0 0 20 0" />
+            <TextBox Grid.Column="1" Text="{Binding Parent.SamplingFrequencyTextBox}" Margin="0 0 20 0" />
         </Grid>
         <Grid Grid.Row="7">
             <Grid.ColumnDefinitions>
@@ -121,7 +121,7 @@
             </Grid.ColumnDefinitions>
             <TextBlock Text="Enter number of columns: " TextAlignment="Right" Margin="0 0 10 0" HorizontalAlignment="Center" VerticalAlignment="Center" />
             <TextBox Grid.Column="1" 
-                     Text="{Binding NumberOfColumnsTB, UpdateSourceTrigger=PropertyChanged}" 
+                     Text="{Binding Parent.ChartHistogramVm.NumberOfColumnsTB, UpdateSourceTrigger=PropertyChanged}" 
                      Visibility="{Binding Path=ColumnsTBVisibility, Converter={StaticResource BooleanToVisibilityConverter}}" 
                      Margin="0 0 20 0"
                      />
@@ -133,7 +133,7 @@
                     <ColumnDefinition Width="2*" />
                 </Grid.ColumnDefinitions>
                 <TextBlock Text="Main: " TextAlignment="Right" VerticalAlignment="Center" Margin="0 0 10 0" />
-                <ComboBox Grid.Column="1" ItemsSource="{Binding Path=SignalsComboBox}" SelectedValue="{Binding Path=MainComboBoxSelected}"  />
+                <ComboBox Grid.Column="1" ItemsSource="{Binding Path=Parent.SignalsComboBox}" SelectedValue="{Binding Path=Parent.MainComboBoxSelected}"  />
             </Grid>
             <Grid Margin="0 0 5 0">
                 <Grid.ColumnDefinitions>
@@ -141,7 +141,7 @@
                     <ColumnDefinition Width="2*" />
                 </Grid.ColumnDefinitions>
                 <TextBlock Text="Additional: " VerticalAlignment="Center" TextAlignment="Right" Margin="0 0 10 0" />
-                <ComboBox Grid.Column="1" ItemsSource="{Binding Path=AdditionalSignalsComboBox}" SelectedValue="{Binding Path=AdditionalComboBoxSelected}"  />
+                <ComboBox Grid.Column="1" ItemsSource="{Binding Path=Parent.AdditionalSignalsComboBox}" SelectedValue="{Binding Path=Parent.AdditionalComboBoxSelected}"  />
             </Grid>
 
         </StackPanel>

@@ -32,7 +32,7 @@
                 Margin="10"
                 materialDesign:HintAssist.Hint="Sampling Frequency"
                 Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                Text="{Binding SamplingFrequencyTextBox}"  />
+                Text="{Binding Parent.SamplingFrequencyTextBox}"  />
             <TextBox
                 Margin="10"
                 materialDesign:HintAssist.Hint="Cut-off frequency"
@@ -51,8 +51,8 @@
             <ComboBox
                 Margin="10" 
                 materialDesign:HintAssist.Hint="Signal" Grid.Column="1" 
-                ItemsSource="{Binding Path=SignalsComboBox}" 
-                SelectedValue="{Binding Path=MainComboBoxSelected}"
+                ItemsSource="{Binding Path=Parent.SignalsComboBox}" 
+                SelectedValue="{Binding Path=Parent.MainComboBoxSelected}"
                 Style="{StaticResource MaterialDesignFloatingHintComboBox}"/>
 
             <ComboBox Margin="10" 

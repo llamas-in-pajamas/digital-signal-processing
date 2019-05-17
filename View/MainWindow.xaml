@@ -54,31 +54,31 @@
                         <TabItem.Header>
                             <TextBlock Text="Signal Generator" TextWrapping="Wrap"/>
                         </TabItem.Header>
-                        <local:SignalGenerator Margin="9 0 0 0" />
+                        <local:SignalGenerator DataContext="{Binding SignalGeneratorVm}" Margin="9 0 0 0" />
                     </TabItem>
                     <TabItem TextElement.Foreground="{DynamicResource MaterialDesignBody}">
                         <TabItem.Header>
-                            <TextBlock Text="Signal Operations" TextWrapping="Wrap"/>
+                            <TextBlock Text="Reconstruct signal" TextWrapping="Wrap"/>
                         </TabItem.Header>
-                        <local:SignalOperations Margin="9 0 0 0" />
+                        <local:SignalOperations DataContext="{Binding ReconstructVm}" Margin="9 0 0 0" />
                     </TabItem>
                     <TabItem TextElement.Foreground="{DynamicResource MaterialDesignBody}">
                         <TabItem.Header>
                             <TextBlock Text="Discrete Operations" TextWrapping="Wrap"/>
                         </TabItem.Header>
-                        <local:AdvancedOperations  Margin="9 0 0 0" />
+                        <local:AdvancedOperations DataContext="{Binding AdvancedOperationsVm}"  Margin="9 0 0 0" />
                     </TabItem>
                     <TabItem TextElement.Foreground="{DynamicResource MaterialDesignBody}">
                         <TabItem.Header>
                             <TextBlock Text="Filtering" TextWrapping="Wrap"/>
                         </TabItem.Header>
-                        <local:Filtering  Margin="9 0 0 0" />
+                        <local:Filtering DataContext="{Binding FilterVm}" Margin="9 0 0 0" />
                     </TabItem>
                     <TabItem TextElement.Foreground="{DynamicResource MaterialDesignBody}">
                         <TabItem.Header>
                             <TextBlock Text="Drawing" TextWrapping="Wrap"/>
                         </TabItem.Header>
-                        <local:Drawing  Margin="9 0 0 0" />
+                        <local:Drawing DataContext="{Binding ChartHistogramVm}" Margin="9 0 0 0" />
                     </TabItem>
                     <TabItem TextElement.Foreground="{DynamicResource MaterialDesignBody}">
                         <TabItem.Header>
@@ -106,10 +106,10 @@
                     <dragablz:TabablzControl Margin="8">
 
                         <TabItem Header="Line Chart" IsSelected="True">
-                            <local:LineChart Margin="0 10" />
+                            <local:LineChart DataContext="{Binding ChartHistogramVm}" Margin="0 10" />
                         </TabItem>
                         <TabItem Header="Histogram">
-                            <local:Histogram Margin="0 10" />
+                            <local:Histogram DataContext="{Binding ChartHistogramVm}" Margin="0 10" />
                         </TabItem>
                         <TabItem Header="Sonar Charts">
                             <local:SonarCharts DataContext="{Binding SonarVm}" Margin="0 10" />
