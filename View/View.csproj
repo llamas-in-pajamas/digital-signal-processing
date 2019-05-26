@@ -79,6 +79,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="UserControls\Charts\ComplexChart.xaml.cs">
+      <DependentUpon>ComplexChart.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Converters\EnumMatchToBooleanConverter.cs" />
     <Compile Include="UserControls\SonarUCs\SonarCharts.xaml.cs">
       <DependentUpon>SonarCharts.xaml</DependentUpon>
@@ -118,6 +121,10 @@
     <Compile Include="ViewModel\ReconstructVM.cs" />
     <Compile Include="ViewModel\SignalGeneratorVM.cs" />
     <Compile Include="ViewModel\SonarVM.cs" />
+    <Page Include="UserControls\Charts\ComplexChart.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UserControls\SonarUCs\SonarCharts.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -201,6 +208,10 @@
     <Resource Include="FodyWeavers.xml" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ComplexUtils\ComplexUtils.csproj">
+      <Project>{960225cc-0765-44b3-9a51-58afe1f6358a}</Project>
+      <Name>ComplexUtils</Name>
+    </ProjectReference>
     <ProjectReference Include="..\FiltersGenerators\FiltersGenerators.csproj">
       <Project>{9556dd86-5297-4789-8a49-b7300b8bcc96}</Project>
       <Name>FiltersGenerators</Name>

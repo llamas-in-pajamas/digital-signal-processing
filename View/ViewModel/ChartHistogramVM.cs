@@ -57,23 +57,23 @@ namespace View.ViewModel
 
         private void DrawChart()
         {
-            var type = DrawableComboBoxSelected.Substring(0, 1);
-            var index = int.Parse(DrawableComboBoxSelected.Substring(1, 1));
-            DataHandler chartToDraw = null;
-            switch (type)
-            {
-                case "S":
-                    chartToDraw = Parent.DataHandlers[index];
-                    break;
-                case "F":
-                    chartToDraw = Parent.Filters[index];
-                    break;
-
-            }
 
             Labels = null;
             try
             {
+                var type = DrawableComboBoxSelected.Substring(0, 1);
+                var index = int.Parse(DrawableComboBoxSelected.Substring(1, 1));
+                DataHandler chartToDraw = null;
+                switch (type)
+                {
+                    case "S":
+                        chartToDraw = Parent.DataHandlers[index];
+                        break;
+                    case "F":
+                        chartToDraw = Parent.Filters[index];
+                        break;
+
+                }
 
                 ChartValues<ObservablePoint> lineValues = new ChartValues<ObservablePoint>();
                 for (int i = 0; i < chartToDraw.X.Count; i++)

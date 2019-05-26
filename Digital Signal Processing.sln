@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SignalUtils", "SignalUtils\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FiltersGenerators", "FiltersGenerators\FiltersGenerators.csproj", "{9556DD86-5297-4789-8A49-B7300B8BCC96}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ComplexUtils", "ComplexUtils\ComplexUtils.csproj", "{960225CC-0765-44B3-9A51-58AFE1F6358A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{9556DD86-5297-4789-8A49-B7300B8BCC96}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9556DD86-5297-4789-8A49-B7300B8BCC96}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9556DD86-5297-4789-8A49-B7300B8BCC96}.Release|Any CPU.Build.0 = Release|Any CPU
+		{960225CC-0765-44B3-9A51-58AFE1F6358A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{960225CC-0765-44B3-9A51-58AFE1F6358A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{960225CC-0765-44B3-9A51-58AFE1F6358A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{960225CC-0765-44B3-9A51-58AFE1F6358A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
