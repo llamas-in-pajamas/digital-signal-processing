@@ -1,0 +1,59 @@
+﻿<UserControl x:Class="View.FourierUC"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:View"
+             mc:Ignorable="d" 
+             d:DesignHeight="800" d:DesignWidth="250"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+             TextElement.FontWeight="Regular"
+             TextElement.FontSize="13"
+             TextOptions.TextFormattingMode="Ideal"
+             TextOptions.TextRenderingMode="Auto"
+             Background="{DynamicResource MaterialDesignPaper}"
+             FontFamily="{DynamicResource MaterialDesignFont}">
+    <StackPanel>
+        <TextBox
+            Margin="10"
+            materialDesign:HintAssist.Hint="Duration"
+            Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+            Text="{Binding Duration}"  />
+
+        <Button Content="Generate Custom Signal" Margin="10 10" Command="{Binding GenerateCustomSignal}" />
+        <ComboBox
+            Margin="10"
+            ItemsSource="{Binding Path=TransformTypes}" 
+            SelectedValue="{Binding Path=SelectedTransformType}" 
+            Style="{StaticResource MaterialDesignFloatingHintComboBox}"
+            materialDesign:HintAssist.Hint="Transform Type"/>
+        <ComboBox
+            Margin="10" 
+            materialDesign:HintAssist.Hint="Signal" 
+            ItemsSource="{Binding Path=Parent.SignalsComboBox}" 
+            SelectedValue="{Binding Path=Parent.MainComboBoxSelected}"
+            Style="{StaticResource MaterialDesignFloatingHintComboBox}"/>
+        <Button Content="Transform!" Margin="10 10" Command="{Binding Transform}" />
+        <TextBlock Text="CHART MODE" Margin="0 15 0 5" TextAlignment="Center"/>
+
+        <RadioButton
+            Margin="10 0 0 5"
+            GroupName="Charts"
+            IsChecked="{Binding IsW1Checked}"
+                Style="{StaticResource MaterialDesignRadioButton}">
+            W1 - Real + Imaginary
+        </RadioButton>
+        <RadioButton
+            GroupName="Charts"
+            IsChecked="{Binding IsW2Checked}"
+            Margin="10 0 0 0"
+            Style="{StaticResource MaterialDesignRadioButton}">
+            W2 - Magnitude + Faze
+        </RadioButton>
+
+
+
+    </StackPanel>
+
+</UserControl>

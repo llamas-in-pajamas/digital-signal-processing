@@ -61,6 +61,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Numerics" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -79,6 +80,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="UserControls\Controls\FourierUC.xaml.cs">
+      <DependentUpon>FourierUC.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UserControls\Charts\ComplexChart.xaml.cs">
       <DependentUpon>ComplexChart.xaml</DependentUpon>
     </Compile>
@@ -117,10 +121,15 @@
     <Compile Include="ViewModel\Base\RelayCommand.cs" />
     <Compile Include="ViewModel\ChartHistogramVM.cs" />
     <Compile Include="ViewModel\FilterVM.cs" />
+    <Compile Include="ViewModel\FourierVM.cs" />
     <Compile Include="ViewModel\MainWindowVM.cs" />
     <Compile Include="ViewModel\ReconstructVM.cs" />
     <Compile Include="ViewModel\SignalGeneratorVM.cs" />
     <Compile Include="ViewModel\SonarVM.cs" />
+    <Page Include="UserControls\Controls\FourierUC.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UserControls\Charts\ComplexChart.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

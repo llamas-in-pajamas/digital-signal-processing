@@ -23,6 +23,7 @@ namespace View.ViewModel
         public ReconstructVM ReconstructVm { get; set; }
         public AdvancedOperationsVM AdvancedOperationsVm { get; set; }
         public FilterVM FilterVm { get; set; }
+        public FourierVM FourierVm { get; set; }
 
         #endregion
 
@@ -76,6 +77,7 @@ namespace View.ViewModel
             ReconstructVm = new ReconstructVM(this);
             AdvancedOperationsVm = new AdvancedOperationsVM(this);
             FilterVm = new FilterVM(this);
+            FourierVm = new FourierVM(this);
 
             ReadWindowsSetting();
             ApplyBase(_isDarkTheme);
