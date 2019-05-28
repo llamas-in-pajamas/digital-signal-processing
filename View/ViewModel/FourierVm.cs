@@ -94,7 +94,7 @@ namespace View.ViewModel
             if (IsW1Checked)
             {
                 DrawW1(_resultOfOperation);
-
+                return;
             }
             DrawW2(_resultOfOperation);
         }
