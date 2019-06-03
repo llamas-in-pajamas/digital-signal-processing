@@ -6,6 +6,7 @@ namespace ComplexUtils
 {
     public class DiscreteFourierTranform
     {
+      
 
         public static List<Complex> Transform(List<Complex> values)
         {
@@ -77,5 +78,7 @@ namespace ComplexUtils
         {
             return Complex.Exp(new Complex(0, 2 * Math.PI * m * n / N));
         }
+
+        
     }
 }

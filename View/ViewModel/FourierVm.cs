@@ -23,7 +23,7 @@ namespace View.ViewModel
         public ICommand Transform { get; set; }
         public ICommand TransformBack { get; set; }
 
-        
+
         public SeriesCollection TopChartSeries { get; set; }
         public SeriesCollection BottomChartSeries { get; set; }
         public string TopChartName { get; set; } = "Real";
@@ -71,6 +71,7 @@ namespace View.ViewModel
             TransformTypes = new ObservableCollection<string>
             {
                 "Discrete Fourier Transform",
+                "Fast Fourier Transform"
             };
             Transform = new RelayCommand(OnTransform);
             TransformBack = new RelayCommand(OnTransformBack);
@@ -78,24 +79,32 @@ namespace View.ViewModel
 
         private void OnTransformBack()
         {
+            var signal = TransformedSignal;
+            List<double> transformedBack = new List<double>();
+
             switch (SelectedTransformType)
             {
+
                 case "Discrete Fourier Transform":
-                    var signal = TransformedSignal;
-                    var transformedBack = DiscreteFourierTranform.TransformBack(signal.Values);
-                    Parent.DataHandlers.Add(new DataHandler()
-                    {
-                        Signal=signal.Name + " back",
-                        IsScattered = true,
-                        SamplesY = transformedBack,
-                        Y = transformedBack
-                    });
+
+                    transformedBack = DiscreteFourierTranform.TransformBack(signal.Values);
+
+                    break;
+                case "Fast Fourier Transform":
+                    transformedBack = FastFourierTransform.TransformBack(signal.Values);
                     break;
                 default:
                     MessageBox.Show("Select Transform");
                     return;
 
             }
+            Parent.DataHandlers.Add(new DataHandler()
+            {
+                Signal = signal.Name + " back",
+                IsScattered = true,
+                SamplesY = transformedBack,
+                Y = transformedBack
+            });
         }
 
         private void GenerateSignal()
@@ -106,20 +115,26 @@ namespace View.ViewModel
 
         private void OnTransform()
         {
+            List<Complex> transformed = new List<Complex>();
+            var signal = Parent.GetMainSelectedSignal();
+            var values = Utils.ConvertRealToComplex(signal.SamplesY);
             switch (SelectedTransformType)
             {
                 case "Discrete Fourier Transform":
-                    var signal = Parent.GetMainSelectedSignal();
-                    var values = Utils.ConvertRealToComplex(signal.SamplesY);
-                    var transformed = DiscreteFourierTranform.Transform(values);
-                    _resultOfOperation = transformed;
-                    TransformedSignals.Add(new ComplexDataHandler(transformed, signal.Signal));
+                    transformed = DiscreteFourierTranform.Transform(values);
+                    break;
+                case "Fast Fourier Transform":
+                    transformed = FastFourierTransform.Transform(values);
                     break;
                 default:
                     MessageBox.Show("Select Transform");
                     return;
 
             }
+
+            _resultOfOperation = transformed;
+            TransformedSignals.Add(new ComplexDataHandler(transformed, signal.Signal));
+
             if (IsW1Checked)
             {
                 DrawW1(_resultOfOperation);
