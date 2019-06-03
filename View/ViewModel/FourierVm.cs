@@ -5,8 +5,10 @@ using System.Numerics;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
+using ComplexUtils;
 using LiveCharts;
 using LiveCharts.Wpf;
+using SignalGenerators;
 using View.ViewModel.Base;
 
 namespace View.ViewModel
@@ -19,12 +21,16 @@ namespace View.ViewModel
         public ObservableCollection<string> TransformTypes { get; set; }
         public string SelectedTransformType { get; set; }
         public ICommand Transform { get; set; }
+        public ICommand TransformBack { get; set; }
 
-
+        
         public SeriesCollection TopChartSeries { get; set; }
         public SeriesCollection BottomChartSeries { get; set; }
         public string TopChartName { get; set; } = "Real";
         public string BottomChartName { get; set; } = "Imaginary";
+
+        public ObservableCollection<ComplexDataHandler> TransformedSignals { get; set; } = new ObservableCollection<ComplexDataHandler>();
+        public ComplexDataHandler TransformedSignal { get; set; }
 
         public bool IsW1Checked
         {
@@ -67,6 +73,29 @@ namespace View.ViewModel
                 "Discrete Fourier Transform",
             };
             Transform = new RelayCommand(OnTransform);
+            TransformBack = new RelayCommand(OnTransformBack);
+        }
+
+        private void OnTransformBack()
+        {
+            switch (SelectedTransformType)
+            {
+                case "Discrete Fourier Transform":
+                    var signal = TransformedSignal;
+                    var transformedBack = DiscreteFourierTranform.TransformBack(signal.Values);
+                    Parent.DataHandlers.Add(new DataHandler()
+                    {
+                        Signal=signal.Name + " back",
+                        IsScattered = true,
+                        SamplesY = transformedBack,
+                        Y = transformedBack
+                    });
+                    break;
+                default:
+                    MessageBox.Show("Select Transform");
+                    return;
+
+            }
         }
 
         private void GenerateSignal()
@@ -81,10 +110,10 @@ namespace View.ViewModel
             {
                 case "Discrete Fourier Transform":
                     var signal = Parent.GetMainSelectedSignal();
-                    var values = ComplexUtils.Utils.ConvertRealToComplex(signal.SamplesY);
-                    var transformed = ComplexUtils.DiscreteFourierTranform.Transform(values);
+                    var values = Utils.ConvertRealToComplex(signal.SamplesY);
+                    var transformed = DiscreteFourierTranform.Transform(values);
                     _resultOfOperation = transformed;
-
+                    TransformedSignals.Add(new ComplexDataHandler(transformed, signal.Signal));
                     break;
                 default:
                     MessageBox.Show("Select Transform");

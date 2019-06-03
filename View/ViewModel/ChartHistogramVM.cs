@@ -80,6 +80,15 @@ namespace View.ViewModel
                 {
                     lineValues.Add(new ObservablePoint(chartToDraw.X[i], chartToDraw.Y[i]));
                 }
+
+                if (chartToDraw.X == null || chartToDraw.X.Count < chartToDraw.Y.Count)
+                {
+                    lineValues.Clear();
+                    for (int i = 0; i < chartToDraw.Y.Count; i++)
+                    {
+                        lineValues.Add(new ObservablePoint(i, chartToDraw.Y[i]));
+                    }
+                }
                 var title = $"{type}{index}. {chartToDraw.Signal}";
 
                 if (chartToDraw.IsScattered)

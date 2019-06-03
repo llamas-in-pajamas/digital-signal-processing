@@ -49,6 +49,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ComplexDataHandler.cs" />
     <Compile Include="DiscreteFourierTranform.cs" />
     <Compile Include="Signals.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -51,6 +51,20 @@
             Style="{StaticResource MaterialDesignRadioButton}">
             W2 - Magnitude + Faze
         </RadioButton>
+        <ComboBox
+            Margin="10"
+            ItemsSource="{Binding Path=TransformTypes}" 
+            SelectedValue="{Binding Path=SelectedTransformType}" 
+            Style="{StaticResource MaterialDesignFloatingHintComboBox}"
+            materialDesign:HintAssist.Hint="Transform Type"/>
+
+        <ComboBox
+            Margin="10" 
+            materialDesign:HintAssist.Hint="Signal" 
+            ItemsSource="{Binding Path=TransformedSignals}" 
+            SelectedValue="{Binding Path=TransformedSignal}"
+            Style="{StaticResource MaterialDesignFloatingHintComboBox}"/>
+        <Button Content="Transform back" Margin="10 10" Command="{Binding TransformBack}" />
 
 
 
