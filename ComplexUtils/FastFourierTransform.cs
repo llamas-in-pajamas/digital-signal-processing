@@ -12,16 +12,14 @@ namespace ComplexUtils
 
         public static List<Complex> Transform(List<Complex> points)
         {
-            List<Complex> transformed = new List<Complex>();
             int N = points.Count;
-            transformed = SwitchSamples(points);
+            var transformed = SwitchSamples(points);
             return transformed.Select(c => c / N).ToList();
         }
         public static List<double> TransformBack(List<Complex> points)
         {
-            List<double> transformed = new List<double>();
             int N = points.Count;
-            transformed = SwitchSamples(points, true).Select(c => c.Real).ToList();
+            var transformed = SwitchSamples(points, true).Select(c => c.Real).ToList();
             return transformed;
         }
 
@@ -54,8 +52,8 @@ namespace ComplexUtils
                         _factorsBack[$"{i}, {N}"] = CoreReverseFactor(i, 1, N);
                     }
 
-                    result[i] = evenPoints[i] + (_factorsBack[$"{i}, {N}"] * oddPoints[i]);
-                    result[i + oddPoints.Count] = evenPoints[i] - (_factorsBack[$"{i}, {N}"] * oddPoints[i]);
+                    result[i] = evenPoints[i] + oddPoints[i];
+                    result[i + oddPoints.Count] = (evenPoints[i] - oddPoints[i]) * _factorsBack[$"{i}, {N}"];
                 }
                 else
                 {
