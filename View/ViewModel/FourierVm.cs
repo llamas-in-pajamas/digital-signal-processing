@@ -124,7 +124,8 @@ namespace View.ViewModel
                     transformed = DiscreteFourierTranform.Transform(values);
                     break;
                 case "Fast Fourier Transform":
-                    transformed = FastFourierTransform.Transform(values);
+                    //transformed = FastFourierTransform.Transform(values);
+                    transformed = DITFFT.Transform(signal.SamplesY);
                     break;
                 default:
                     MessageBox.Show("Select Transform");
