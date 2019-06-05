@@ -44,11 +44,13 @@ namespace ComplexUtils
                 Array.Reverse(bitsarray);
 
                 var delta = 8 - bits;
-                for (int j = bitsarray.Length - 1; j >= bitsarray.Length - 1 - delta; j--)
+                int k = 0;
+                for (int j = bitsarray.Length - 1; k <= bits / 2; j--)
                 {
                     var temp = bitsarray[j];
                     bitsarray[j] = bitsarray[bitsarray.Length - j + delta - 1];
                     bitsarray[bitsarray.Length - j + delta - 1] = temp;
+                    k++;
                 }
 
                 Array.Reverse(bitsarray);
