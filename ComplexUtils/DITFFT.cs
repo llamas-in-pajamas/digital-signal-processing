@@ -39,17 +39,14 @@ namespace ComplexUtils
                 BitArray bit = new BitArray(new[] { val });
                 bool[] bitsarray = new bool[8];
                 bit.CopyTo(bitsarray, 0);
-                bool isreversed = false;
-
                 Array.Reverse(bitsarray);
-
-                var delta = 8 - bits;
+                var delta = 8 - bits - 1;
                 int k = 0;
-                for (int j = bitsarray.Length - 1; k <= bits / 2; j--)
+                for (int j = bitsarray.Length - 1; k < bits / 2; j--)
                 {
                     var temp = bitsarray[j];
-                    bitsarray[j] = bitsarray[bitsarray.Length - j + delta - 1];
-                    bitsarray[bitsarray.Length - j + delta - 1] = temp;
+                    bitsarray[j] = bitsarray[bitsarray.Length - j + delta];
+                    bitsarray[bitsarray.Length - j + delta] = temp;
                     k++;
                 }
 
@@ -101,17 +98,17 @@ namespace ComplexUtils
             SplitSamples(points, counter * 2, ref splitted);
         }
 
-        public static List<double> ReverseTransform(List<Complex> points)
+        /*public static List<double> ReverseTransform(List<Complex> points)
         {
             List<double> transformed = new List<double>();
             int N = points.Count;
 
             transformed = SwitchSamples(points, true).Select(c => c.Real).ToList();
             return transformed;
-        }
+        }*/
 
 
-        public static List<Complex> SwitchSamples(List<Complex> points, bool reverse = false)
+        /*public static List<Complex> SwitchSamples(List<Complex> points, bool reverse = false)
         {
             if (points.Count < 2)
             {
@@ -126,7 +123,7 @@ namespace ComplexUtils
             }
             var result = Connect(SwitchSamples(evenPoints, reverse), SwitchSamples(oddPoints, reverse), reverse);
             return result;
-        }
+        }*/
         private static List<Complex> Connect(List<Complex> evenPoints, List<Complex> oddPoints, bool reverse)
         {
             int N = oddPoints.Count * 2;
