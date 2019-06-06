@@ -31,7 +31,7 @@
             <TextBlock Text="{Binding TopChartName}" FontWeight="Bold" TextAlignment="Center" Margin="0 0 0 5" DockPanel.Dock="Top" />
             <lvc:CartesianChart 
                 Series="{Binding TopChartSeries}" 
-                LegendLocation="Right" 
+                LegendLocation="None" 
                 DisableAnimations="True" 
                 Hoverable="False" 
                 DataTooltip="{x:Null}" 
@@ -54,7 +54,7 @@
             <TextBlock Text="{Binding BottomChartName}" FontWeight="Bold" TextAlignment="Center" Margin="0 0 0 5" DockPanel.Dock="Top" />
             <lvc:CartesianChart 
                 Series="{Binding BottomChartSeries}" 
-                LegendLocation="Right" 
+                LegendLocation="None" 
                 DisableAnimations="True" 
                 Hoverable="False" 
                 DataTooltip="{x:Null}" 
