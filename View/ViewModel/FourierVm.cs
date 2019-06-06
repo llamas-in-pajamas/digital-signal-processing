@@ -24,6 +24,8 @@ namespace View.ViewModel
         public ICommand Transform { get; set; }
         public ICommand TransformBack { get; set; }
 
+        public double SamplingFreq { get; set; } = 16;
+
 
         public SeriesCollection TopChartSeries { get; set; }
         public SeriesCollection BottomChartSeries { get; set; }
@@ -74,7 +76,8 @@ namespace View.ViewModel
             TransformTypes = new ObservableCollection<string>
             {
                 "Discrete Fourier Transform",
-                "Fast Fourier Transform"
+                "Fast Fourier Transform",
+                "Wavelet Transform"
             };
             Transform = new RelayCommand(OnTransform);
             TransformBack = new RelayCommand(OnTransformBack);
@@ -98,6 +101,11 @@ namespace View.ViewModel
                     transformedBack = FastFourierTransform.TransformBack(signal.Values);
                     timer.Stop();
                     break;
+                case "Wavelet Transform":
+                    timer.Start();
+                    transformedBack = Wavelet.TransformBack(signal.Values);
+                    timer.Stop();
+                    break;
                 default:
                     MessageBox.Show("Select Transform");
                     return;
@@ -115,7 +123,7 @@ namespace View.ViewModel
 
         private void GenerateSignal()
         {
-            var signal = ComplexUtils.Signals.GetCustomSignal(Duration);
+            var signal = Signals.GetCustomSignal(Duration, SamplingFreq);
             Parent.DataHandlers.Add(signal);
         }
 
@@ -136,6 +144,11 @@ namespace View.ViewModel
                     timer.Start();
                     transformed = FastFourierTransform.Transform(values);
                     //transformed = DITFFT.Transform(signal.SamplesY);
+                    timer.Stop();
+                    break;
+                case "Wavelet Transform":
+                    timer.Start();
+                    transformed = Wavelet.Transform(signal.SamplesY);
                     timer.Stop();
                     break;
                 default:

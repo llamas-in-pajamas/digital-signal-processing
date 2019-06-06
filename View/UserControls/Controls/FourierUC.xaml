@@ -20,6 +20,11 @@
             materialDesign:HintAssist.Hint="Duration"
             Style="{StaticResource MaterialDesignFloatingHintTextBox}"
             Text="{Binding Duration}"  />
+        <TextBox
+            Margin="10"
+            materialDesign:HintAssist.Hint="Sampling Frequency"
+            Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+            Text="{Binding SamplingFreq}"  />
 
         <Button Content="Generate Custom Signal" Margin="10 10" Command="{Binding GenerateCustomSignal}" />
         <ComboBox
