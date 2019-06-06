@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 using System.Windows;
@@ -31,6 +32,8 @@ namespace View.ViewModel
 
         public ObservableCollection<ComplexDataHandler> TransformedSignals { get; set; } = new ObservableCollection<ComplexDataHandler>();
         public ComplexDataHandler TransformedSignal { get; set; }
+
+        public string LastTime { get; set; }
 
         public bool IsW1Checked
         {
@@ -81,23 +84,26 @@ namespace View.ViewModel
         {
             var signal = TransformedSignal;
             List<double> transformedBack = new List<double>();
-
+            Stopwatch timer = new Stopwatch();
             switch (SelectedTransformType)
             {
 
                 case "Discrete Fourier Transform":
-
+                    timer.Start();
                     transformedBack = DiscreteFourierTranform.TransformBack(signal.Values);
-
+                    timer.Stop();
                     break;
                 case "Fast Fourier Transform":
+                    timer.Start();
                     transformedBack = FastFourierTransform.TransformBack(signal.Values);
+                    timer.Stop();
                     break;
                 default:
                     MessageBox.Show("Select Transform");
                     return;
 
             }
+            LastTime = $"{timer.ElapsedTicks} ticks";
             Parent.DataHandlers.Add(new DataHandler()
             {
                 Signal = signal.Name + " back",
@@ -118,14 +124,19 @@ namespace View.ViewModel
             List<Complex> transformed = new List<Complex>();
             var signal = Parent.GetMainSelectedSignal();
             var values = Utils.ConvertRealToComplex(signal.SamplesY);
+            Stopwatch timer = new Stopwatch();
             switch (SelectedTransformType)
             {
                 case "Discrete Fourier Transform":
+                    timer.Start();
                     transformed = DiscreteFourierTranform.Transform(values);
+                    timer.Stop();
                     break;
                 case "Fast Fourier Transform":
-                    //transformed = FastFourierTransform.Transform(values);
-                    transformed = DITFFT.Transform(signal.SamplesY);
+                    timer.Start();
+                    transformed = FastFourierTransform.Transform(values);
+                    //transformed = DITFFT.Transform(signal.SamplesY);
+                    timer.Stop();
                     break;
                 default:
                     MessageBox.Show("Select Transform");
@@ -133,6 +144,7 @@ namespace View.ViewModel
 
             }
 
+            LastTime = $"{timer.ElapsedTicks} ticks";
             _resultOfOperation = transformed;
             TransformedSignals.Add(new ComplexDataHandler(transformed, signal.Signal));
 

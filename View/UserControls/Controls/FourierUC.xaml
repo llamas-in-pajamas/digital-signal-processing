@@ -65,6 +65,8 @@
             SelectedValue="{Binding Path=TransformedSignal}"
             Style="{StaticResource MaterialDesignFloatingHintComboBox}"/>
         <Button Content="Transform back" Margin="10 10" Command="{Binding TransformBack}" />
+        <TextBlock Text="Last Transformation Time" Margin="0 15 0 5" TextAlignment="Center" />
+        <TextBlock Text="{Binding LastTime}" TextAlignment="Center"></TextBlock>
 
 
 

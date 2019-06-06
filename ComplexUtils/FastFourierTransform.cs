@@ -52,15 +52,15 @@ namespace ComplexUtils
                         _factorsBack[$"{i}, {N}"] = CoreReverseFactor(i, 1, N);
                     }
 
-                    result[i] = evenPoints[i] + oddPoints[i];
-                    result[i + oddPoints.Count] = (evenPoints[i] - oddPoints[i]) * _factorsBack[$"{i}, {N}"];
+                    result[i] = evenPoints[i] + (_factorsBack[$"{i}, {N}"] * oddPoints[i]);
+                    result[i + oddPoints.Count] = evenPoints[i] - (_factorsBack[$"{i}, {N}"] * oddPoints[i]);
                 }
                 else
                 {
                     if (!_factors.ContainsKey($"{i}, {N}"))
                         _factors[$"{i}, {N}"] = CoreFactor(i, 1, N);
-                    result[i] = evenPoints[i] + oddPoints[i];
-                    result[i + oddPoints.Count] = (evenPoints[i] - oddPoints[i]) * _factors[$"{i}, {N}"];
+                    result[i] = evenPoints[i] + (_factors[$"{i}, {N}"] * oddPoints[i]);
+                    result[i + oddPoints.Count] = evenPoints[i] - (_factors[$"{i}, {N}"] * oddPoints[i]);
                 }
 
 
